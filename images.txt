@@ -1,4 +1,5 @@
 portainer/portainer-ce:latest
+portainer/portainer-ee:latest
 ghcr.io/ajnart/homarr:latest
 authelia/authelia:latest
 jc21/nginx-proxy-manager:latest
