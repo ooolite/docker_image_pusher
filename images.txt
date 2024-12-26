@@ -4,3 +4,4 @@ authelia/authelia:latest
 jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
 jxxghp/moviepilot-v2:latest
+linuxserver/qbittorrent:latest
