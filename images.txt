@@ -7,4 +7,4 @@ jxxghp/moviepilot-v2:latest
 linuxserver/qbittorrent:latest
 amilys/embyserver:latest
 metatube/metatube-server:latest
-allanpk716/ChineseSubFinder:latest
+allanpk716/chinesesubfinder:latest
