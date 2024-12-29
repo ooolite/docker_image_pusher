@@ -8,3 +8,4 @@ linuxserver/qbittorrent:latest
 amilys/embyserver:latest
 metatube/metatube-server:latest
 allanpk716/chinesesubfinder:latest
+containrrr/watchtower:latest
