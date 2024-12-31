@@ -13,3 +13,4 @@ ghcr.io/home-assistant/home-assistant:latest
 whyour/qinglong:latest
 yidadaa/chatgpt-next-web:latest
 icepage/aujc:latest
+iyuucn/iyuuplus-dev:latest
