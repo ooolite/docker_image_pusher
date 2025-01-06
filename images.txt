@@ -16,3 +16,6 @@ iyuucn/iyuuplus-dev:latest
 vaultwarden/server:latest
 jellyfin/jellyfin:latest
 ddsderek/wxchat:latest #MoviePilot微信转发代理
+youshandefeiyang/allinone:latest #IPTV
+yuexuangu/allinone_format:latest #IPTV
+
