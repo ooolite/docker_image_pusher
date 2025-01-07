@@ -16,7 +16,5 @@ iyuucn/iyuuplus-dev:latest
 vaultwarden/server:latest
 jellyfin/jellyfin:latest
 ddsderek/wxchat:latest
-youshandefeiyang/allinone:latest
-yuexuangu/allinone_format:latest
 ghcr.io/gethomepage/homepage:latest
 guovern/iptv-api:latest
