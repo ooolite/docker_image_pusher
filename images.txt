@@ -17,3 +17,4 @@ vaultwarden/server:latest
 jellyfin/jellyfin:latest
 ghcr.io/gethomepage/homepage:latest
 guovern/iptv-api:latest
+ghcr.io/theporndatabase/namer:latest
