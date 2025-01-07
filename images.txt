@@ -15,6 +15,5 @@ yidadaa/chatgpt-next-web:latest
 iyuucn/iyuuplus-dev:latest
 vaultwarden/server:latest
 jellyfin/jellyfin:latest
-ddsderek/wxchat:latest
 ghcr.io/gethomepage/homepage:latest
 guovern/iptv-api:latest
