@@ -19,4 +19,3 @@ ghcr.io/gethomepage/homepage:latest
 guovern/iptv-api:latest
 ghcr.io/theporndatabase/namer:latest
 crazymax/fail2ban:latest
-vikunja/vikunja:latest
