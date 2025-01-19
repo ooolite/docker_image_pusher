@@ -21,3 +21,4 @@ ghcr.io/theporndatabase/namer:latest
 crazymax/fail2ban:latest
 nicolargo/glances:latest
 adguard/adguardhome:latest
+jlesage/handbrake:latest
