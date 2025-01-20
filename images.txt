@@ -1,5 +1,4 @@
 portainer/portainer-ee:latest
-ghcr.io/ajnart/homarr:latest
 authelia/authelia:latest
 jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
@@ -22,7 +21,5 @@ crazymax/fail2ban:latest
 nicolargo/glances:latest
 adguard/adguardhome:latest
 jlesage/handbrake:latest
-xhongc/music_tag_web:latest
-ghcr.io/wy580477/musicn-container:latest
 lscr.io/linuxserver/lidarr:latest
 lscr.io/linuxserver/jackett:latest
