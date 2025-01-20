@@ -24,3 +24,4 @@ adguard/adguardhome:latest
 jlesage/handbrake:latest
 xhongc/music_tag_web:latest
 ghcr.io/wy580477/musicn-container:latest
+ghcr.io/linuxserver/lidarr:latest
