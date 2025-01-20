@@ -22,3 +22,4 @@ crazymax/fail2ban:latest
 nicolargo/glances:latest
 adguard/adguardhome:latest
 jlesage/handbrake:latest
+xhongc/music_tag_web:latest
