@@ -24,3 +24,4 @@ jlesage/handbrake:latest
 lscr.io/linuxserver/lidarr:latest
 lscr.io/linuxserver/jackett:latest
 lscr.io/linuxserver/prowlarr:latest
+deluan/navidrome:latest
