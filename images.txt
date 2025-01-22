@@ -25,4 +25,4 @@ lscr.io/linuxserver/lidarr:latest
 lscr.io/linuxserver/jackett:latest
 lscr.io/linuxserver/prowlarr:latest
 deluan/navidrome:latest
-vikunja/vikunja:latest
+xhongc/music_tag_web:latest
