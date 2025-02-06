@@ -28,4 +28,4 @@ deluan/navidrome:latest
 xhongc/music_tag_web:latest
 fogforest/yesplaymusic:latest
 pan93412/unblock-netease-music-enhanced:latest
-ghcr.io/imputnet/cobalt:latest
+youshandefeiyang/allinone:latest
