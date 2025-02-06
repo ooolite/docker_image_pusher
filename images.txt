@@ -29,3 +29,4 @@ xhongc/music_tag_web:latest
 fogforest/yesplaymusic:latest
 pan93412/unblock-netease-music-enhanced:latest
 youshandefeiyang/allinone:latest
+yuexuangu/allinone_format:latest
