@@ -30,3 +30,4 @@ fogforest/yesplaymusic:latest
 pan93412/unblock-netease-music-enhanced:latest
 youshandefeiyang/allinone:latest
 yuexuangu/allinone_format:latest
+lscr.io/linuxserver/freecad:latest
