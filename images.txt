@@ -8,14 +8,11 @@ amilys/embyserver:latest
 metatube/metatube-server:latest
 allanpk716/chinesesubfinder:latest
 containrrr/watchtower:latest
-ghcr.io/home-assistant/home-assistant:latest
 whyour/qinglong:latest
 yidadaa/chatgpt-next-web:latest
 iyuucn/iyuuplus-dev:latest
 vaultwarden/server:latest
-jellyfin/jellyfin:latest
 ghcr.io/gethomepage/homepage:latest
-guovern/iptv-api:latest
 ghcr.io/theporndatabase/namer:latest
 crazymax/fail2ban:latest
 nicolargo/glances:latest
@@ -25,9 +22,5 @@ lscr.io/linuxserver/lidarr:latest
 lscr.io/linuxserver/jackett:latest
 lscr.io/linuxserver/prowlarr:latest
 deluan/navidrome:latest
-xhongc/music_tag_web:latest
-fogforest/yesplaymusic:latest
-pan93412/unblock-netease-music-enhanced:latest
 youshandefeiyang/allinone:latest
 yuexuangu/allinone_format:latest
-lscr.io/linuxserver/freecad:latest
