@@ -24,3 +24,4 @@ lscr.io/linuxserver/prowlarr:latest
 deluan/navidrome:latest
 youshandefeiyang/allinone:latest
 yuexuangu/allinone_format:latest
+ghcr.io/home-assistant/home-assistant:latest
