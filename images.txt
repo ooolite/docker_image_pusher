@@ -25,3 +25,4 @@ deluan/navidrome:latest
 youshandefeiyang/allinone:latest
 yuexuangu/allinone_format:latest
 ghcr.io/home-assistant/home-assistant:latest
+arcw/sgcc_electricity:latest
