@@ -15,7 +15,7 @@ vaultwarden/server:latest
 ghcr.io/gethomepage/homepage:latest
 ghcr.io/theporndatabase/namer:latest
 crazymax/fail2ban:latest
-nicolargo/glances:latest
+nicolargo/glances:latest-full
 adguard/adguardhome:latest
 jlesage/handbrake:latest
 lscr.io/linuxserver/lidarr:latest
