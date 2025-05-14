@@ -26,3 +26,4 @@ youshandefeiyang/allinone:latest
 yuexuangu/allinone_format:latest
 ghcr.io/home-assistant/home-assistant:latest
 arcw/sgcc_electricity:latest
+jiangrui1994/cloudsaver:latest
