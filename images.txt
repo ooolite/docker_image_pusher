@@ -30,3 +30,4 @@ jiangrui1994/cloudsaver:latest
 ghcr.io/ourongxing/newsnow:latest
 corentinth/it-tools:latest
 stirlingtools/stirling-pdf:latest
+dockurr/windows:latest
