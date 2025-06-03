@@ -32,4 +32,4 @@ corentinth/it-tools:latest
 stirlingtools/stirling-pdf:latest
 dockurr/windows:latest
 libretranslate/libretranslate:latest
-n8nio/n8n:latest
+docker.n8n.io/n8nio/n8n
