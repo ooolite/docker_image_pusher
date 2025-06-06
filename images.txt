@@ -33,3 +33,5 @@ stirlingtools/stirling-pdf:latest
 dockurr/windows:latest
 libretranslate/libretranslate:latest
 docker.n8n.io/n8nio/n8n
+henrygd/beszel:latest
+henrygd/beszel-agent:latest
