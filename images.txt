@@ -30,7 +30,6 @@ jiangrui1994/cloudsaver:latest
 ghcr.io/ourongxing/newsnow:latest
 corentinth/it-tools:latest
 stirlingtools/stirling-pdf:latest
-dockurr/windows:latest
 libretranslate/libretranslate:latest
 docker.n8n.io/n8nio/n8n
 henrygd/beszel:latest
