@@ -5,6 +5,7 @@ jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
 postgres:latest
+redis:latest
 crazymax/fail2ban:latest
 #sso
 jxxghp/moviepilot-v2:latest
