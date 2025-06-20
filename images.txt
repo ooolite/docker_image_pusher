@@ -1,5 +1,6 @@
 #sso 
 portainer/portainer-ee:latest
+portainer/portainer-ce:latest
 authelia/authelia:latest
 jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
