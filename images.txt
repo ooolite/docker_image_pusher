@@ -1,5 +1,5 @@
 #sso 
-portainer/portainer-ee:latest
+portainer/portainer-ee:latest  #portainer 商业版
 portainer/portainer-ce:latest
 authelia/authelia:latest
 jc21/nginx-proxy-manager:latest
@@ -7,6 +7,7 @@ jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
 postgres:17
 redis:latest
+tecnativa/docker-socket-proxy:latest #docker.sock的安全代理
 crazymax/fail2ban:latest
 #sso
 jxxghp/moviepilot-v2:latest
