@@ -1,4 +1,4 @@
-#  sso部分开始
+#sso
 portainer/portainer-ee:latest
 portainer/portainer-ce:latest
 authelia/authelia:latest
@@ -7,10 +7,9 @@ jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
 postgres:17
 redis:latest
-#  docker.sock的安全代理
 tecnativa/docker-socket-proxy:latest
 crazymax/fail2ban:latest
-#  sso部分结束
+#sso
 jxxghp/moviepilot-v2:latest
 linuxserver/qbittorrent:latest
 amilys/embyserver:latest
