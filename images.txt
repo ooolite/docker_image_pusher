@@ -12,15 +12,17 @@ containrrr/watchtower:latest
 crazymax/fail2ban:latest
 henrygd/beszel:latest
 henrygd/beszel-agent:latest
-#sso
+#movietools
 jxxghp/moviepilot-v2:latest
+jellyfin/jellyfin:latest
 linuxserver/qbittorrent:latest
 amilys/embyserver:latest
 ghcr.io/metatube-community/metatube-server:latest
 allanpk716/chinesesubfinder:latest
+iyuucn/iyuuplus-dev:latest
+#others
 whyour/qinglong:latest
 yidadaa/chatgpt-next-web:latest
-iyuucn/iyuuplus-dev:latest
 vaultwarden/server:latest
 ghcr.io/theporndatabase/namer:latest
 nicolargo/glances:latest-full
@@ -33,7 +35,6 @@ deluan/navidrome:latest
 youshandefeiyang/allinone:latest
 yuexuangu/allinone_format:latest
 ghcr.io/home-assistant/home-assistant:latest
-arcw/sgcc_electricity:latest
 jiangrui1994/cloudsaver:latest
 ghcr.io/ourongxing/newsnow:latest
 corentinth/it-tools:latest
