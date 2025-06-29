@@ -5,7 +5,7 @@ authelia/authelia:latest
 jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
-postgres:17
+postgres:latest
 redis:latest
 tecnativa/docker-socket-proxy:latest
 containrrr/watchtower:latest
@@ -26,7 +26,6 @@ whyour/qinglong:latest
 yidadaa/chatgpt-next-web:latest
 vaultwarden/server:latest
 ghcr.io/theporndatabase/namer:latest
-nicolargo/glances:latest-full
 adguard/adguardhome:latest
 jlesage/handbrake:latest
 linuxserver/lidarr:latest
@@ -41,6 +40,6 @@ ghcr.io/ourongxing/newsnow:latest
 corentinth/it-tools:latest
 stirlingtools/stirling-pdf:latest
 libretranslate/libretranslate:latest
-docker.n8n.io/n8nio/n8n
+docker.n8n.io/n8nio/n8n:latest
 vinlic/deepseek-free-api:latest
-justsong/one-api
+justsong/one-api:latest
