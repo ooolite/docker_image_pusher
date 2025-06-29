@@ -16,7 +16,7 @@ henrygd/beszel-agent:latest
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
 linuxserver/qbittorrent:latest
-linuxserver/transmission:4.0.5
+linuxserver/transmission:4.0.4
 amilys/embyserver:latest
 ghcr.io/metatube-community/metatube-server:latest
 allanpk716/chinesesubfinder:latest
