@@ -5,7 +5,7 @@ authelia/authelia:latest
 jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
-postgres:latest
+postgres:17
 redis:latest
 tecnativa/docker-socket-proxy:latest
 containrrr/watchtower:latest
@@ -16,7 +16,7 @@ henrygd/beszel-agent:latest
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
 linuxserver/qbittorrent:latest
-linuxserver/transmission:latest
+linuxserver/transmission:4.0.5
 amilys/embyserver:latest
 ghcr.io/metatube-community/metatube-server:latest
 allanpk716/chinesesubfinder:latest
