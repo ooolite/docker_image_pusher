@@ -15,7 +15,7 @@ henrygd/beszel-agent:latest
 #movietools
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
-linuxserver/qbittorrent:5.0.0
+linuxserver/qbittorrent:latest
 linuxserver/transmission:latest
 amilys/embyserver:latest
 ghcr.io/metatube-community/metatube-server:latest
