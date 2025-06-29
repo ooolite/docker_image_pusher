@@ -15,8 +15,8 @@ henrygd/beszel-agent:latest
 #movietools
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
-lscr.io/linuxserver/qbittorrent:5.1.0
-lscr.io/linuxserver/transmission:latest
+linuxserver/qbittorrent:5.1.0
+linuxserver/transmission:latest
 amilys/embyserver:latest
 ghcr.io/metatube-community/metatube-server:latest
 allanpk716/chinesesubfinder:latest
@@ -29,9 +29,9 @@ ghcr.io/theporndatabase/namer:latest
 nicolargo/glances:latest-full
 adguard/adguardhome:latest
 jlesage/handbrake:latest
-lscr.io/linuxserver/lidarr:latest
-lscr.io/linuxserver/jackett:latest
-lscr.io/linuxserver/prowlarr:latest
+linuxserver/lidarr:latest
+linuxserver/jackett:latest
+linuxserver/prowlarr:latest
 deluan/navidrome:latest
 youshandefeiyang/allinone:latest
 yuexuangu/allinone_format:latest
