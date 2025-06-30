@@ -6,6 +6,7 @@ jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
 postgres:17
+dpage/pgadmin4:latest
 redis:latest
 tecnativa/docker-socket-proxy:latest
 containrrr/watchtower:latest
