@@ -10,6 +10,7 @@ redis:latest
 tecnativa/docker-socket-proxy:latest
 containrrr/watchtower:latest
 crazymax/fail2ban:latest
+crazymax/msmtpd:latest
 henrygd/beszel:latest
 henrygd/beszel-agent:latest
 #movietools
