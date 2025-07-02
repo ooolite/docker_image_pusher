@@ -25,6 +25,7 @@ iyuucn/iyuuplus-dev:latest
 envyafish/byte-muse:latest
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
+suwmlee/ikaros:latest
 #others
 whyour/qinglong:latest
 yidadaa/chatgpt-next-web:latest
