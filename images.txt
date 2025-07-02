@@ -24,6 +24,7 @@ allanpk716/chinesesubfinder:latest
 iyuucn/iyuuplus-dev:latest
 envyafish/byte-muse:latest
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
+suwmlee/bonita:latest
 #others
 whyour/qinglong:latest
 yidadaa/chatgpt-next-web:latest
