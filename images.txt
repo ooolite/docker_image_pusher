@@ -13,6 +13,7 @@ crazymax/fail2ban:latest
 crazymax/msmtpd:latest
 henrygd/beszel:latest
 henrygd/beszel-agent:latest
+crowdsecurity/crowdsec:latest
 #movietools
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
