@@ -26,7 +26,12 @@ iyuucn/iyuuplus-dev:latest
 envyafish/byte-muse:latest
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
-suwmlee/ikaros:latest
+#musictools
+xhongc/music_tag_web:latest
+linuxserver/lidarr:latest
+linuxserver/jackett:latest
+linuxserver/prowlarr:latest
+deluan/navidrome:latest
 #others
 whyour/qinglong:latest
 yidadaa/chatgpt-next-web:latest
@@ -34,10 +39,6 @@ vaultwarden/server:latest
 ghcr.io/theporndatabase/namer:latest
 adguard/adguardhome:latest
 jlesage/handbrake:latest
-linuxserver/lidarr:latest
-linuxserver/jackett:latest
-linuxserver/prowlarr:latest
-deluan/navidrome:latest
 youshandefeiyang/allinone:latest
 yuexuangu/allinone_format:latest
 ghcr.io/home-assistant/home-assistant:latest
