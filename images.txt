@@ -17,8 +17,8 @@ crowdsecurity/crowdsec:latest
 #movietools
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
-linuxserver/qbittorrent:latest
-linuxserver/transmission:4.0.4
+lscr.io/linuxserver/qbittorrent:latest
+lscr.io/linuxserver/transmission:4.0.4
 amilys/embyserver:latest
 ghcr.io/metatube-community/metatube-server:latest
 allanpk716/chinesesubfinder:latest
@@ -28,9 +28,10 @@ ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
 #musictools
 xhongc/music_tag_web:latest
-linuxserver/lidarr:latest
-linuxserver/jackett:latest
-linuxserver/prowlarr:latest
+lscr.io/linuxserver/lidarr:latest
+lscr.io/linuxserver/jackett:latest
+lscr.io/linuxserver/prowlarr:latest
+ghcr.io/flaresolverr/flaresolverr:latest
 deluan/navidrome:latest
 #others
 whyour/qinglong:latest
