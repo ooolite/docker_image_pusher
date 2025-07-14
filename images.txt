@@ -33,6 +33,11 @@ lscr.io/linuxserver/jackett:latest
 lscr.io/linuxserver/prowlarr:latest
 ghcr.io/flaresolverr/flaresolverr:latest
 deluan/navidrome:latest
+#dockertools
+ghcr.io/ourongxing/newsnow:latest
+stirlingtools/stirling-pdf:latest
+libretranslate/libretranslate:latest
+corentinth/it-tools:latest
 #others
 whyour/qinglong:latest
 yidadaa/chatgpt-next-web:latest
@@ -44,10 +49,6 @@ youshandefeiyang/allinone:latest
 yuexuangu/allinone_format:latest
 ghcr.io/home-assistant/home-assistant:latest
 jiangrui1994/cloudsaver:latest
-ghcr.io/ourongxing/newsnow:latest
-corentinth/it-tools:latest
-stirlingtools/stirling-pdf:latest
-libretranslate/libretranslate:latest
 docker.n8n.io/n8nio/n8n:latest
 vinlic/deepseek-free-api:latest
 justsong/one-api:latest
