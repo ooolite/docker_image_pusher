@@ -39,10 +39,10 @@ ghcr.io/ourongxing/newsnow:latest
 stirlingtools/stirling-pdf:latest
 libretranslate/libretranslate:latest
 corentinth/it-tools:latest
+vaultwarden/server:latest
 #others
 whyour/qinglong:latest
 yidadaa/chatgpt-next-web:latest
-vaultwarden/server:latest
 ghcr.io/theporndatabase/namer:latest
 adguard/adguardhome:latest
 jlesage/handbrake:latest
@@ -53,3 +53,9 @@ jiangrui1994/cloudsaver:latest
 docker.n8n.io/n8nio/n8n:latest
 vinlic/deepseek-free-api:latest
 justsong/one-api:latest
+#dify
+langgenius/dify-api:1.6.0
+langgenius/dify-web:1.6.0
+langgenius/dify-sandbox:0.2.12
+langgenius/dify-plugin-daemon:0.1.3-local
+ubuntu/squid:latest
