@@ -60,3 +60,4 @@ langgenius/dify-sandbox:0.2.12
 langgenius/dify-plugin-daemon:0.1.3-local
 ubuntu/squid:latest
 semitechnologies/weaviate:latest
+nginx:latest
