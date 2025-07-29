@@ -7,7 +7,7 @@ jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
 postgres:17
 redis:latest
-library/mariadb:latest
+mariadb:latest
 tecnativa/docker-socket-proxy:latest
 containrrr/watchtower:latest
 crazymax/fail2ban:latest
