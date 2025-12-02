@@ -14,7 +14,6 @@ crazymax/fail2ban:latest
 crazymax/msmtpd:latest
 henrygd/beszel:latest
 henrygd/beszel-agent:latest
-crowdsecurity/crowdsec:latest
 louislam/uptime-kuma:2
 #movietools
 jxxghp/moviepilot-v2:latest
@@ -54,9 +53,6 @@ youshandefeiyang/allinone:latest
 yuexuangu/allinone_format:latest
 ghcr.io/home-assistant/home-assistant:latest
 jiangrui1994/cloudsaver:latest
-docker.n8n.io/n8nio/n8n:latest
-vinlic/deepseek-free-api:latest
-justsong/one-api:latest
 #dify
 langgenius/dify-api:latest
 langgenius/dify-web:latest
@@ -65,3 +61,8 @@ langgenius/dify-plugin-daemon:latest-local
 ubuntu/squid:latest
 semitechnologies/weaviate:latest
 nginx:latest
+#ai
+vinlic/deepseek-free-api:latest
+mumujie/mumuainovel:latest
+docker.n8n.io/n8nio/n8n:latest
+justsong/one-api:latest
