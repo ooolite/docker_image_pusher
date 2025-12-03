@@ -62,7 +62,6 @@ ubuntu/squid:latest
 semitechnologies/weaviate:latest
 nginx:latest
 #ai
-vinlic/deepseek-free-api:latest
 mumujie/mumuainovel:latest
 docker.n8n.io/n8nio/n8n:latest
 justsong/one-api:latest
