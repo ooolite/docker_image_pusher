@@ -37,10 +37,8 @@ deluan/navidrome:latest
 #dockertools
 ghcr.io/ourongxing/newsnow:latest
 stirlingtools/stirling-pdf:latest
-libretranslate/libretranslate:latest
 corentinth/it-tools:latest
 vaultwarden/server:latest
-linzeyi/hivision_idphotos:latest
 rustdesk/rustdesk-server:latest
 histonemax/redink:latest
 #others
