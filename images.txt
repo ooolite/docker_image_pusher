@@ -44,6 +44,7 @@ histonemax/redink:latest
 jiangrui1994/cloudsaver:latest
 ghcr.io/paperless-ngx/paperless-ngx:latest
 neosmemo/memos:stable
+freshrss/freshrss:latest
 #others
 whyour/qinglong:latest
 yidadaa/chatgpt-next-web:latest
