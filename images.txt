@@ -22,12 +22,10 @@ lscr.io/linuxserver/qbittorrent:latest
 lscr.io/linuxserver/transmission:4.0.4
 amilys/embyserver:latest
 ghcr.io/metatube-community/metatube-server:latest
-allanpk716/chinesesubfinder:latest
 iyuucn/iyuuplus-dev:latest
 envyafish/byte-muse:latest
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
-envyafish/byte-muse:beta
 #musictools
 xhongc/music_tag_web:latest
 lscr.io/linuxserver/lidarr:latest
@@ -44,11 +42,6 @@ rustdesk/rustdesk-server:latest
 histonemax/redink:latest
 jiangrui1994/cloudsaver:latest
 ghcr.io/paperless-ngx/paperless-ngx:latest
-#others
-whyour/qinglong:latest
-yidadaa/chatgpt-next-web:latest
-adguard/adguardhome:latest
-ghcr.io/home-assistant/home-assistant:latest
 #dify
 langgenius/dify-api:latest
 langgenius/dify-web:latest
