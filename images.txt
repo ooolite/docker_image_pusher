@@ -26,6 +26,7 @@ iyuucn/iyuuplus-dev:latest
 envyafish/byte-muse:latest
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
+suwmlee/bonita:0.15.0
 #musictools
 xhongc/music_tag_web:latest
 lscr.io/linuxserver/lidarr:latest
