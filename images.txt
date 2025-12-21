@@ -24,6 +24,7 @@ amilys/embyserver:latest
 ghcr.io/metatube-community/metatube-server:latest
 iyuucn/iyuuplus-dev:latest
 envyafish/byte-muse:latest
+envyafish/byte-muse:1.26.4
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
 suwmlee/bonita:0.15.0
