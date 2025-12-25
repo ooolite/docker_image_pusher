@@ -5,9 +5,9 @@ on:
   push:
     branches: [ main ]
   # 时区注意：GitHub Actions 使用 UTC 时间，北京时间需要 减 8 小时
-  # 想要北京时间 23:00 运行 → 设置 UTC 15:00
+  # 想要北京时间 22:00 运行 → 设置 UTC 14:00
   schedule:
-    - cron: '0 15 * * *'
+    - cron: '0 14 * * *'
 
 env:
   ALIYUN_REGISTRY: "${{ secrets.ALIYUN_REGISTRY }}"
