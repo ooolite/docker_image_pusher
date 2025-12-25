@@ -44,8 +44,6 @@ rustdesk/rustdesk-server:latest
 histonemax/redink:latest
 jiangrui1994/cloudsaver:latest
 ghcr.io/paperless-ngx/paperless-ngx:latest
-wantcat/trendradar:latest
-wantcat/trendradar-mcp:latest
 #dify
 langgenius/dify-api:latest
 langgenius/dify-web:latest
@@ -58,9 +56,11 @@ nginx:latest
 mumujie/mumuainovel:latest
 docker.n8n.io/n8nio/n8n:latest
 justsong/one-api:latest
-#
+#rss
 neosmemo/memos:stable
 freshrss/freshrss:latest
 diygod/rsshub:latest
 ghcr.io/hyoban/puppeteer-real-browser-hono:latest
 browserless/chrome:latest
+wantcat/trendradar:latest
+wantcat/trendradar-mcp:latest
