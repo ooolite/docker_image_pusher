@@ -44,6 +44,7 @@ rustdesk/rustdesk-server:latest
 histonemax/redink:latest
 jiangrui1994/cloudsaver:latest
 ghcr.io/paperless-ngx/paperless-ngx:latest
+libretranslate/libretranslate:latest
 #dify
 langgenius/dify-api:latest
 langgenius/dify-web:latest
