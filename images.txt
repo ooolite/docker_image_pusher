@@ -20,8 +20,7 @@ jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
 lscr.io/linuxserver/qbittorrent:latest
 lscr.io/linuxserver/transmission:4.0.4
-amilys/embyserver:latest
-ghcr.io/metatube-community/metatube-server:latest
+lscr.io/linuxserver/transmission:latest
 iyuucn/iyuuplus-dev:latest
 envyafish/byte-muse:latest
 envyafish/byte-muse:1.26.4
@@ -36,7 +35,6 @@ lscr.io/linuxserver/prowlarr:latest
 ghcr.io/flaresolverr/flaresolverr:latest
 deluan/navidrome:latest
 #dockertools
-ghcr.io/ourongxing/newsnow:latest
 stirlingtools/stirling-pdf:latest
 corentinth/it-tools:latest
 vaultwarden/server:latest
