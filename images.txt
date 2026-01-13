@@ -45,6 +45,8 @@ ghcr.io/paperless-ngx/paperless-ngx:latest
 gotenberg/gotenberg:latest
 apache/tika:latest
 libretranslate/libretranslate:latest
+ghcr.io/linkwarden/linkwarden:latest
+getmeili/meilisearch:latest
 #dify
 langgenius/dify-api:latest
 langgenius/dify-web:latest
