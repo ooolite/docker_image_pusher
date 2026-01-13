@@ -58,6 +58,7 @@ mumujie/mumuainovel:latest
 docker.n8n.io/n8nio/n8n:latest
 justsong/one-api:latest
 ollama/ollama:latest
+ghcr.io/666ghj/bettafish:latest
 #rss
 neosmemo/memos:stable
 freshrss/freshrss:latest
