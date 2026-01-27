@@ -49,6 +49,7 @@ apache/tika:latest
 libretranslate/libretranslate:latest
 ghcr.io/linkwarden/linkwarden:latest
 getmeili/meilisearch:latest
+triliumnext/trilium:latest
 #dify
 langgenius/dify-api:latest
 langgenius/dify-web:latest
