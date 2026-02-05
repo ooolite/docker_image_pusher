@@ -63,6 +63,8 @@ mumujie/mumuainovel:latest
 docker.n8n.io/n8nio/n8n:latest
 justsong/one-api:latest
 ollama/ollama:latest
+# for use ollama webui
+ghcr.io/open-webui/open-webui:main
 # for use AMD GPU
 ollama/ollama:rocm
 ghcr.io/666ghj/bettafish:latest
