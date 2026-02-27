@@ -1,3 +1,10 @@
+#db
+postgres:17
+postgres:18-bookworm
+redis:latest
+mariadb:latest
+# UI for db
+adminer:latest
 #sso
 portainer/portainer-ee:latest
 portainer/portainer-ee:alpine
@@ -6,10 +13,6 @@ authelia/authelia:latest
 jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
-postgres:17
-postgres:18-bookworm
-redis:latest
-mariadb:latest
 tecnativa/docker-socket-proxy:latest
 containrrr/watchtower:latest
 crazymax/fail2ban:latest
