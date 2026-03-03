@@ -3,8 +3,13 @@ postgres:17
 postgres:18-bookworm
 redis:latest
 mariadb:latest
-# UI for db
+# Postgres UI
 adminer:latest
+# intratools
+lscr.io/linuxserver/socket-proxy:latest
+containrrr/watchtower:latest
+crazymax/fail2ban:latest
+crazymax/msmtpd:latest
 #sso
 portainer/portainer-ee:latest
 portainer/portainer-ee:alpine
