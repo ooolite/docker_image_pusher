@@ -7,9 +7,11 @@ mariadb:latest
 adminer:latest
 # intratools
 lscr.io/linuxserver/socket-proxy:latest
+tecnativa/docker-socket-proxy:latest
 containrrr/watchtower:latest
 crazymax/fail2ban:latest
 crazymax/msmtpd:latest
+crazymax/msmtpd:edge
 #sso
 portainer/portainer-ee:latest
 portainer/portainer-ee:alpine
@@ -18,10 +20,6 @@ authelia/authelia:latest
 jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
-tecnativa/docker-socket-proxy:latest
-containrrr/watchtower:latest
-crazymax/fail2ban:latest
-crazymax/msmtpd:latest
 henrygd/beszel:latest
 henrygd/beszel-agent:latest
 # for use SMART
