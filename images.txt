@@ -55,6 +55,7 @@ libretranslate/libretranslate:latest
 ghcr.io/linkwarden/linkwarden:latest
 getmeili/meilisearch:latest
 triliumnext/trilium:latest
+triliumnext/trilium:rootless
 #dify
 #langgenius/dify-api:latest
 #langgenius/dify-web:latest
