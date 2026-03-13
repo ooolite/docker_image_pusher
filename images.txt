@@ -1,28 +1,25 @@
 #db
-postgres:17
 postgres:18-bookworm
 redis:latest
 mariadb:latest
 # Postgres UI
 adminer:latest
-# intratools
+# docker socket proxy
 lscr.io/linuxserver/socket-proxy:latest
-containrrr/watchtower:latest
-crazymax/fail2ban:latest
-crazymax/msmtpd:latest
 #sso
-portainer/portainer-ee:latest
 portainer/portainer-ee:alpine
-portainer/portainer-ce:latest
 authelia/authelia:latest
 jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
 henrygd/beszel:latest
 henrygd/beszel-agent:latest
-# for use SMART
+# SMART
 henrygd/beszel-agent:alpine
 louislam/uptime-kuma:2
+containrrr/watchtower:latest
+crazymax/fail2ban:latest
+crazymax/msmtpd:latest
 #movietools
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
@@ -36,17 +33,17 @@ suwmlee/bonita:latest
 suwmlee/bonita:0.15.0
 #musictools
 xhongc/music_tag_web:latest
-lscr.io/linuxserver/lidarr:latest
-lscr.io/linuxserver/jackett:latest
-lscr.io/linuxserver/prowlarr:latest
-ghcr.io/flaresolverr/flaresolverr:latest
-deluan/navidrome:latest
+#lscr.io/linuxserver/lidarr:latest
+#lscr.io/linuxserver/jackett:latest
+#lscr.io/linuxserver/prowlarr:latest
+#ghcr.io/flaresolverr/flaresolverr:latest
+#deluan/navidrome:latest
 #dockertools
-stirlingtools/stirling-pdf:latest
-corentinth/it-tools:latest
+#stirlingtools/stirling-pdf:latest
+#corentinth/it-tools:latest
 vaultwarden/server:latest
-rustdesk/rustdesk-server:latest
-histonemax/redink:latest
+#rustdesk/rustdesk-server:latest
+#histonemax/redink:latest
 jiangrui1994/cloudsaver:latest
 ghcr.io/paperless-ngx/paperless-ngx:latest
 gotenberg/gotenberg:latest
@@ -65,21 +62,15 @@ grafana/grafana-enterprise:latest
 #semitechnologies/weaviate:latest
 #nginx:latest
 #ai
-mumujie/mumuainovel:latest
 docker.n8n.io/n8nio/n8n:latest
 justsong/one-api:latest
 ollama/ollama:latest
 # for use ollama webui
 ghcr.io/open-webui/open-webui:main
-ghcr.io/666ghj/bettafish:latest
 #rss
-neosmemo/memos:stable
 freshrss/freshrss:latest
 ghcr.io/weserv/images:5.x
 diygod/rsshub:latest
-ghcr.io/hyoban/puppeteer-real-browser-hono:latest
 browserless/chrome:latest
-wantcat/trendradar:latest
-wantcat/trendradar-mcp:latest
 hectorqin/reader:latest
 hectorqin/remote-webview:latest
