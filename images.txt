@@ -54,6 +54,7 @@ getmeili/meilisearch:latest
 triliumnext/trilium:latest
 grafana/grafana-enterprise:latest
 c4illin/convertx:latest
+sitoi/dailycheckin:latest
 #dify
 #langgenius/dify-api:latest
 #langgenius/dify-web:latest
