@@ -1,12 +1,10 @@
-# db
+# db工具
 postgres:18-bookworm
 redis:latest
 mariadb:latest
 # Postgres UI
 adminer:latest
-# docker socket proxy
-lscr.io/linuxserver/socket-proxy:latest
-#sso
+# sso工具
 portainer/portainer-ee:alpine
 authelia/authelia:latest
 jc21/nginx-proxy-manager:latest
@@ -14,13 +12,13 @@ jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
 henrygd/beszel:latest
 henrygd/beszel-agent:latest
-# SMART
-henrygd/beszel-agent:alpine
+#henrygd/beszel-agent:alpine
 louislam/uptime-kuma:2
 containrrr/watchtower:latest
 crazymax/fail2ban:latest
 crazymax/msmtpd:latest
-#movietools
+lscr.io/linuxserver/socket-proxy:latest
+# 影视相关工具
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
 lscr.io/linuxserver/qbittorrent:5.1.4
@@ -30,32 +28,40 @@ envyafish/byte-muse:latest
 envyafish/byte-muse:1.26.4
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
-suwmlee/bonita:0.15.0
-#musictools
+suwmlee/bonita:0.22.2
+# docker相关工具
+vaultwarden/server:latest
+ghcr.io/paperless-ngx/paperless-ngx:latest
+gotenberg/gotenberg:latest
+apache/tika:latest
+triliumnext/trilium:latest
+ghcr.io/linkwarden/linkwarden:latest
+getmeili/meilisearch:latest
+sitoi/dailycheckin:latest
+jiangrui1994/cloudsaver:latest
+#stirlingtools/stirling-pdf:latest
+#rustdesk/rustdesk-server:latest
+# Ai相关工具
+docker.n8n.io/n8nio/n8n:latest
+justsong/one-api:latest
+ollama/ollama:latest
+ghcr.io/open-webui/open-webui:main
+# RSS相关工具
+freshrss/freshrss:latest
+ghcr.io/weserv/images:5.x
+libretranslate/libretranslate:latest
+diygod/rsshub:latest
+browserless/chrome:latest
+hectorqin/reader:latest
+hectorqin/remote-webview:latest
+# 音乐相关工具
 xhongc/music_tag_web:latest
+deluan/navidrome:latest
 #lscr.io/linuxserver/lidarr:latest
 #lscr.io/linuxserver/jackett:latest
 #lscr.io/linuxserver/prowlarr:latest
 #ghcr.io/flaresolverr/flaresolverr:latest
-#deluan/navidrome:latest
-#dockertools
-#stirlingtools/stirling-pdf:latest
-#corentinth/it-tools:latest
-vaultwarden/server:latest
-#rustdesk/rustdesk-server:latest
-#histonemax/redink:latest
-jiangrui1994/cloudsaver:latest
-ghcr.io/paperless-ngx/paperless-ngx:latest
-gotenberg/gotenberg:latest
-apache/tika:latest
-libretranslate/libretranslate:latest
-ghcr.io/linkwarden/linkwarden:latest
-getmeili/meilisearch:latest
-triliumnext/trilium:latest
-grafana/grafana-enterprise:latest
-c4illin/convertx:latest
-sitoi/dailycheckin:latest
-#dify
+# dify相关
 #langgenius/dify-api:latest
 #langgenius/dify-web:latest
 #langgenius/dify-sandbox:latest
@@ -63,16 +69,3 @@ sitoi/dailycheckin:latest
 #ubuntu/squid:latest
 #semitechnologies/weaviate:latest
 #nginx:latest
-#ai
-docker.n8n.io/n8nio/n8n:latest
-justsong/one-api:latest
-ollama/ollama:latest
-# for use ollama webui
-ghcr.io/open-webui/open-webui:main
-#rss
-freshrss/freshrss:latest
-ghcr.io/weserv/images:5.x
-diygod/rsshub:latest
-browserless/chrome:latest
-hectorqin/reader:latest
-hectorqin/remote-webview:latest
