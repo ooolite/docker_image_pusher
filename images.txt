@@ -35,32 +35,31 @@ ghcr.io/paperless-ngx/paperless-ngx:latest
 gotenberg/gotenberg:latest
 apache/tika:latest
 triliumnext/trilium:latest
-ghcr.io/linkwarden/linkwarden:latest
-getmeili/meilisearch:latest
+#ghcr.io/linkwarden/linkwarden:latest
+#getmeili/meilisearch:latest
 sitoi/dailycheckin:latest
-jiangrui1994/cloudsaver:latest
+rustdesk/rustdesk-server:latest
+#jiangrui1994/cloudsaver:latest
 #stirlingtools/stirling-pdf:latest
-#rustdesk/rustdesk-server:latest
 # Ai相关工具
-docker.n8n.io/n8nio/n8n:latest
-justsong/one-api:latest
-ollama/ollama:latest
-ghcr.io/open-webui/open-webui:main
+#docker.n8n.io/n8nio/n8n:latest
+#justsong/one-api:latest
+#ollama/ollama:latest
+#ghcr.io/open-webui/open-webui:main
 # RSS相关工具
 freshrss/freshrss:latest
 ghcr.io/weserv/images:5.x
 libretranslate/libretranslate:latest
 diygod/rsshub:latest
 browserless/chrome:latest
+# 小说阅读
 hectorqin/reader:latest
 hectorqin/remote-webview:latest
+# 小说下载
+ghcr.io/freeok/sonovel:latest
 # 音乐相关工具
 xhongc/music_tag_web:latest
 deluan/navidrome:latest
-#lscr.io/linuxserver/lidarr:latest
-#lscr.io/linuxserver/jackett:latest
-#lscr.io/linuxserver/prowlarr:latest
-#ghcr.io/flaresolverr/flaresolverr:latest
 # dify相关
 #langgenius/dify-api:latest
 #langgenius/dify-web:latest
