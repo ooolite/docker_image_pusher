@@ -41,6 +41,8 @@ sitoi/dailycheckin:latest
 rustdesk/rustdesk-server:latest
 #jiangrui1994/cloudsaver:latest
 #stirlingtools/stirling-pdf:latest
+openlistteam/openlist:latest
+duplicati/duplicati:latest
 # Ai相关工具
 #docker.n8n.io/n8nio/n8n:latest
 #justsong/one-api:latest
