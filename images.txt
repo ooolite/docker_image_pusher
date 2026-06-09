@@ -14,7 +14,8 @@ henrygd/beszel:latest
 henrygd/beszel-agent:latest
 #henrygd/beszel-agent:alpine
 louislam/uptime-kuma:2
-containrrr/watchtower:latest
+#containrrr/watchtower:latest
+getwud/wud:latest
 crazymax/fail2ban:latest
 crazymax/msmtpd:latest
 lscr.io/linuxserver/socket-proxy:latest
@@ -41,8 +42,6 @@ sitoi/dailycheckin:latest
 rustdesk/rustdesk-server:latest
 #jiangrui1994/cloudsaver:latest
 #stirlingtools/stirling-pdf:latest
-openlistteam/openlist:latest
-lscr.io/linuxserver/duplicati:latest
 # Ai相关工具
 #docker.n8n.io/n8nio/n8n:latest
 #justsong/one-api:latest
@@ -55,10 +54,10 @@ libretranslate/libretranslate:latest
 diygod/rsshub:latest
 browserless/chrome:latest
 # 小说阅读
-hectorqin/reader:latest
-hectorqin/remote-webview:latest
+#hectorqin/reader:latest
+#hectorqin/remote-webview:latest
 # 小说下载
-ghcr.io/freeok/sonovel:latest
+#ghcr.io/freeok/sonovel:latest
 # 音乐相关工具
 xhongc/music_tag_web:latest
 deluan/navidrome:latest
