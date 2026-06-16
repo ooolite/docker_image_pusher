@@ -22,14 +22,16 @@ lscr.io/linuxserver/socket-proxy:latest
 # 影视相关工具
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
-lscr.io/linuxserver/qbittorrent:5.1.4
-lscr.io/linuxserver/transmission:4.1.0
+lscr.io/linuxserver/qbittorrent:latest
+lscr.io/linuxserver/transmission:latest
+lscr.io/linuxserver/qbittorrent:5.2.0
+lscr.io/linuxserver/transmission:4.1.2
 iyuucn/iyuuplus-dev:latest
 envyafish/byte-muse:latest
-#envyafish/byte-muse:1.26.4
+#envyafish/byte-muse:1.27.4
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
-#suwmlee/bonita:0.22.2
+#suwmlee/bonita:0.27.1
 # docker相关工具
 vaultwarden/server:latest
 ghcr.io/paperless-ngx/paperless-ngx:latest
