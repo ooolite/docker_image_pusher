@@ -19,6 +19,14 @@ getwud/wud:latest
 crazymax/fail2ban:latest
 crazymax/msmtpd:latest
 lscr.io/linuxserver/socket-proxy:latest
+# NPM Plus
+zoeyvid/npmplus:latest
+crowdsecurity/crowdsec:latest
+ghcr.io/openappsec/agent:latest
+ghcr.io/openappsec/smartsync:latest
+ghcr.io/openappsec/smartsync-shared-files:latest
+ghcr.io/openappsec/smartsync-tuning:latest
+maxmind/geoipupdate:latest
 # 影视相关工具
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
