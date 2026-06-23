@@ -27,7 +27,7 @@ ghcr.io/openappsec/agent:latest
 ghcr.io/openappsec/smartsync:latest
 ghcr.io/openappsec/smartsync-shared-files:latest
 ghcr.io/openappsec/smartsync-tuning:latest
-maxmind/geoipupdate:latest
+ghcr.io/maxmind/geoipupdate:latest
 # 影视相关工具
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
