@@ -15,6 +15,7 @@ henrygd/beszel-agent:latest
 #henrygd/beszel-agent:alpine
 louislam/uptime-kuma:2
 #containrrr/watchtower:latest
+nickfedor/watchtower:latest
 getwud/wud:latest
 crazymax/fail2ban:latest
 crazymax/msmtpd:latest
