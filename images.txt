@@ -7,7 +7,7 @@ adminer:latest
 # sso工具
 portainer/portainer-ee:alpine
 authelia/authelia:latest
-jc21/nginx-proxy-manager:latest
+#jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
 henrygd/beszel:latest
@@ -16,9 +16,9 @@ henrygd/beszel-agent:latest
 louislam/uptime-kuma:2
 #containrrr/watchtower:latest
 nickfedor/watchtower:latest
-getwud/wud:latest
-crazymax/fail2ban:latest
-crazymax/msmtpd:latest
+#getwud/wud:latest
+#crazymax/fail2ban:latest
+#crazymax/msmtpd:latest
 lscr.io/linuxserver/socket-proxy:latest
 # NPM Plus
 zoeyvid/npmplus:latest
@@ -40,6 +40,8 @@ envyafish/byte-muse:latest
 #envyafish/byte-muse:1.27.4
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
+openlistteam/openlist:latest
+jiangrui1994/cloudsaver:latest
 #suwmlee/bonita:0.27.1
 # docker相关工具
 vaultwarden/server:latest
@@ -51,13 +53,12 @@ triliumnext/trilium:latest
 #getmeili/meilisearch:latest
 sitoi/dailycheckin:latest
 rustdesk/rustdesk-server:latest
-#jiangrui1994/cloudsaver:latest
 #stirlingtools/stirling-pdf:latest
 # Ai相关工具
 #docker.n8n.io/n8nio/n8n:latest
-#justsong/one-api:latest
-#ollama/ollama:latest
-#ghcr.io/open-webui/open-webui:main
+justsong/one-api:latest
+ollama/ollama:latest
+ghcr.io/open-webui/open-webui:main
 # RSS相关工具
 freshrss/freshrss:latest
 ghcr.io/weserv/images:5.x
