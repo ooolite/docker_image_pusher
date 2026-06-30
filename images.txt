@@ -41,6 +41,7 @@ envyafish/byte-muse:latest
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
 openlistteam/openlist:latest
+getmeili/meilisearch:latest
 jiangrui1994/cloudsaver:latest
 #suwmlee/bonita:0.27.1
 # docker相关工具
@@ -49,8 +50,7 @@ ghcr.io/paperless-ngx/paperless-ngx:latest
 gotenberg/gotenberg:latest
 apache/tika:latest
 triliumnext/trilium:latest
-#ghcr.io/linkwarden/linkwarden:latest
-#getmeili/meilisearch:latest
+ghcr.io/linkwarden/linkwarden:latest
 sitoi/dailycheckin:latest
 rustdesk/rustdesk-server:latest
 #stirlingtools/stirling-pdf:latest
