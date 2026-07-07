@@ -42,6 +42,7 @@ ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
 openlistteam/openlist:latest
 getmeili/meilisearch:latest
+getmeili/meilisearch:1.48.3
 jiangrui1994/cloudsaver:latest
 #suwmlee/bonita:0.27.1
 # docker相关工具
