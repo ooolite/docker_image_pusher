@@ -1,9 +1,9 @@
 # db工具
 postgres:18-bookworm
 redis:latest
-mariadb:latest
+#mariadb:latest
 # Postgres UI
-adminer:latest
+#adminer:latest
 # sso工具
 portainer/portainer-ee:alpine
 authelia/authelia:latest
@@ -25,29 +25,26 @@ allinurl/goaccess:latest
 grafana/grafana-enterprise:latest
 # NPM Plus
 zoeyvid/npmplus:latest
+zoeyvid/npmplus:develop
 crowdsecurity/crowdsec:latest
-ghcr.io/openappsec/agent:latest
-ghcr.io/openappsec/smartsync:latest
-ghcr.io/openappsec/smartsync-shared-files:latest
-ghcr.io/openappsec/smartsync-tuning:latest
 ghcr.io/maxmind/geoipupdate:latest
 # 影视相关工具
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
 lscr.io/linuxserver/qbittorrent:latest
 lscr.io/linuxserver/transmission:latest
-lscr.io/linuxserver/qbittorrent:5.2.0
-lscr.io/linuxserver/transmission:4.1.2
+#lscr.io/linuxserver/qbittorrent:5.2.0
+#lscr.io/linuxserver/transmission:4.1.2
 iyuucn/iyuuplus-dev:latest
 envyafish/byte-muse:latest
 #envyafish/byte-muse:1.27.4
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
+#suwmlee/bonita:0.27.1
 openlistteam/openlist:latest
 getmeili/meilisearch:latest
-getmeili/meilisearch:v1.48.3
+#getmeili/meilisearch:v1.48.3
 jiangrui1994/cloudsaver:latest
-#suwmlee/bonita:0.27.1
 # docker相关工具
 vaultwarden/server:latest
 ghcr.io/paperless-ngx/paperless-ngx:latest
