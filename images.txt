@@ -20,6 +20,9 @@ nickfedor/watchtower:latest
 #crazymax/fail2ban:latest
 #crazymax/msmtpd:latest
 lscr.io/linuxserver/socket-proxy:latest
+prom/prometheus:latest
+allinurl/goaccess:latest
+grafana/grafana-enterprise:latest
 # NPM Plus
 zoeyvid/npmplus:latest
 crowdsecurity/crowdsec:latest
