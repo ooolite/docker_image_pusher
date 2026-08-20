@@ -24,6 +24,7 @@ grafana/loki:latest
 grafana/alloy:latest
 grafana/grafana-enterprise:latest
 prom/prometheus:latest
+prom/node-exporter:latest
 allinurl/goaccess:latest
 # NPM Plus
 zoeyvid/npmplus:latest
