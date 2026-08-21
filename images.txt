@@ -6,7 +6,6 @@ redis:latest
 #adminer:latest
 # sso工具
 portainer/portainer-ee:alpine
-authelia/authelia:latest
 #jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
@@ -26,9 +25,9 @@ grafana/grafana-enterprise:latest
 prom/prometheus:latest
 prom/node-exporter:latest
 allinurl/goaccess:latest
-# NPM Plus
+# WAF
 zoeyvid/npmplus:latest
-zoeyvid/npmplus:develop
+authelia/authelia:latest
 crowdsecurity/crowdsec:latest
 ghcr.io/maxmind/geoipupdate:latest
 # 影视相关工具
