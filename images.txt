@@ -25,6 +25,7 @@ grafana/grafana-enterprise:latest
 prom/prometheus:latest
 prom/node-exporter:latest
 allinurl/goaccess:latest
+gotify/server:latest
 # WAF
 zoeyvid/npmplus:latest
 authelia/authelia:latest
