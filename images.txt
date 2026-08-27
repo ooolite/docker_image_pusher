@@ -1,3 +1,6 @@
+# same name
+gotify/server:latest
+vaultwarden/server:latest
 # db工具
 postgres:18-bookworm
 redis:latest
@@ -25,7 +28,6 @@ lscr.io/linuxserver/socket-proxy:latest
 #prom/prometheus:latest
 #prom/node-exporter:latest
 #allinurl/goaccess:latest
-gotify/server:latest
 # WAF
 zoeyvid/npmplus:latest
 authelia/authelia:latest
@@ -49,7 +51,6 @@ getmeili/meilisearch:latest
 #getmeili/meilisearch:v1.48.3
 jiangrui1994/cloudsaver:latest
 # docker相关工具
-vaultwarden/server:latest
 ghcr.io/paperless-ngx/paperless-ngx:latest
 gotenberg/gotenberg:latest
 apache/tika:latest
