@@ -34,8 +34,8 @@ ghcr.io/maxmind/geoipupdate:latest
 # 影视相关工具
 jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
-lscr.io/linuxserver/qbittorrent:latest
-lscr.io/linuxserver/transmission:latest
+linuxserver/qbittorrent:latest
+linuxserver/transmission:latest
 #lscr.io/linuxserver/qbittorrent:5.2.0
 #lscr.io/linuxserver/transmission:4.1.2
 iyuucn/iyuuplus-dev:latest
