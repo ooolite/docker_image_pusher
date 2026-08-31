@@ -50,6 +50,7 @@ openlistteam/openlist:latest
 getmeili/meilisearch:latest
 #getmeili/meilisearch:v1.48.3
 jiangrui1994/cloudsaver:latest
+ghcr.io/monlor/xiaoya-alist:latest
 # docker相关工具
 ghcr.io/paperless-ngx/paperless-ngx:latest
 gotenberg/gotenberg:latest
