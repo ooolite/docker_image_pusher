@@ -11,6 +11,7 @@ redis:latest
 ghcr.io/home-assistant/home-assistant:stable
 # sso工具
 portainer/portainer-ee:alpine
+portainer/portainer-ee:latest
 #jc21/nginx-proxy-manager:latest
 jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
