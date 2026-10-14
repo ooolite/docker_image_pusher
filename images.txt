@@ -69,6 +69,7 @@ rustdesk/rustdesk-server:latest
 justsong/one-api:latest
 ollama/ollama:latest
 ghcr.io/open-webui/open-webui:main
+huobao/huobao-drama:latest
 # RSS相关工具
 freshrss/freshrss:latest
 ghcr.io/weserv/images:5.x
