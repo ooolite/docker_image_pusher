@@ -71,7 +71,7 @@ ollama/ollama:latest
 ollama/ollama:rocm
 diegosouzapw/omniroute:latest
 ghcr.io/open-webui/open-webui:main
-huobao/huobao-drama:latest
+#huobao/huobao-drama:latest
 soulter/astrbot:latest
 # RSS相关工具
 freshrss/freshrss:latest
