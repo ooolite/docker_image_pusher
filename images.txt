@@ -8,11 +8,11 @@ redis:latest
 # Postgres UI
 #adminer:latest
 # HA
-ghcr.io/home-assistant/home-assistant:stable
+#ghcr.io/home-assistant/home-assistant:stable
 # sso工具
-portainer/portainer-ee:alpine
-portainer/portainer-ee:latest
 #jc21/nginx-proxy-manager:latest
+#portainer/portainer-ee:latest
+portainer/portainer-ee:alpine
 jeessy/ddns-go:latest
 ghcr.io/gethomepage/homepage:latest
 henrygd/beszel:latest
@@ -41,37 +41,36 @@ jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
 linuxserver/qbittorrent:latest
 linuxserver/transmission:latest
-#lscr.io/linuxserver/qbittorrent:5.2.0
-#lscr.io/linuxserver/transmission:4.1.2
+lscr.io/linuxserver/qbittorrent:5.2.0
+lscr.io/linuxserver/transmission:4.1.2
 iyuucn/iyuuplus-dev:latest
 envyafish/byte-muse:latest
-#envyafish/byte-muse:1.27.4
+envyafish/byte-muse:1.27.4
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
-#suwmlee/bonita:0.27.1
+suwmlee/bonita:0.27.1
 openlistteam/openlist:latest
 getmeili/meilisearch:latest
-#getmeili/meilisearch:v1.48.3
+getmeili/meilisearch:v1.48.3
 jiangrui1994/cloudsaver:latest
 ghcr.io/monlor/xiaoya-alist:latest
-# docker相关工具
-mauriceboe/trek:latest
+#docker相关工具
+#ghcr.io/linkwarden/linkwarden:latest
+#stirlingtools/stirling-pdf:latest
+sitoi/dailycheckin:latest
 ghcr.io/paperless-ngx/paperless-ngx:latest
 gotenberg/gotenberg:latest
 apache/tika:latest
 triliumnext/trilium:latest
-ghcr.io/linkwarden/linkwarden:latest
-sitoi/dailycheckin:latest
 rustdesk/rustdesk-server:latest
-#stirlingtools/stirling-pdf:latest
 # Ai相关工具
-#docker.n8n.io/n8nio/n8n:latest
-justsong/one-api:latest
+#justsong/one-api:latest
+#huobao/huobao-drama:latest
+docker.n8n.io/n8nio/n8n:latest
 ollama/ollama:latest
 ollama/ollama:rocm
 diegosouzapw/omniroute:latest
 ghcr.io/open-webui/open-webui:main
-#huobao/huobao-drama:latest
 soulter/astrbot:latest
 mlikiowa/napcat-docker:latest
 # RSS相关工具
@@ -80,14 +79,14 @@ ghcr.io/weserv/images:5.x
 libretranslate/libretranslate:latest
 diygod/rsshub:latest
 browserless/chrome:latest
+# 音乐相关工具
+xhongc/music_tag_web:latest
+deluan/navidrome:latest
 # 小说阅读
 #hectorqin/reader:latest
 #hectorqin/remote-webview:latest
 # 小说下载
-#ghcr.io/freeok/sonovel:latest
-# 音乐相关工具
-xhongc/music_tag_web:latest
-deluan/navidrome:latest
+ghcr.io/freeok/sonovel:latest
 # dify相关
 #langgenius/dify-api:latest
 #langgenius/dify-web:latest
