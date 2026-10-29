@@ -4,119 +4,136 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
-  # 注意：GitHub Actions 用 UTC。北京时间 21:00 = UTC 13:00
+  # 时区注意：GitHub Actions 使用 UTC 时间，北京时间需要减 8 小时
+  # 想要北京时间 21:00 运行 → 设置 UTC 13:00
   schedule:
     - cron: '0 13 * * *'
 
-# 防止手动/定时任务叠加
+# 避免 push 与 schedule 同时触发时重复运行
 concurrency:
-  group: docker-sync-${{ github.ref }}
-  cancel-in-progress: true
+  group: docker-sync
+  cancel-in-progress: false
 
 env:
-  TZ: Asia/Shanghai
+  ALIYUN_REGISTRY: "${{ secrets.ALIYUN_REGISTRY }}"
+  ALIYUN_NAME_SPACE: "${{ secrets.ALIYUN_NAME_SPACE }}"
+  ALIYUN_REGISTRY_USER: "${{ secrets.ALIYUN_REGISTRY_USER }}"
+  ALIYUN_REGISTRY_PASSWORD: "${{ secrets.ALIYUN_REGISTRY_PASSWORD }}"
+  PARALLEL: "8"   # 并发数，可根据 runner 网络情况调整（一般 6~12）
 
 jobs:
   sync:
-    name: Sync Images
+    name: Sync images (skopeo, parallel)
     runs-on: ubuntu-latest
     timeout-minutes: 360
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        with:
-          root-reserve-mb: 2048
-          swap-size-mb: 128
-          remove-dotnet: 'true'
-          remove-haskell: 'true'
-          # remove-android: 'true'
-          # remove-codeql: 'true'
-          build-mount-path: '/var/lib/docker/'
-
-      - name: Restart docker
-        run: sudo service docker restart
-
-      - name: Disk before sync
-        run: df -hT
-
-      # 用官方 action 登录，密码不会出现在命令行/日志里
-      - name: Login to Aliyun
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ secrets.ALIYUN_REGISTRY }}
-          username: ${{ secrets.ALIYUN_REGISTRY_USER }}
-          password: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
-
-      - name: Sync images
-        env:
-          ALIYUN_REGISTRY: ${{ secrets.ALIYUN_REGISTRY }}
-          ALIYUN_NAME_SPACE: ${{ secrets.ALIYUN_NAME_SPACE }}
+      - name: Install skopeo
         run: |
-          set -uo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq skopeo
+          skopeo --version
 
-          # ---- 解析工具函数（两次循环复用）----
-          get_image()    { awk '{print $NF}' <<< "$1"; }
-          get_platform() { awk -F'--platform[ =]' '{if (NF>1) print $2}' <<< "$1" | awk '{print $1}'; }
+      - name: Sync images to Aliyun
+        run: |
+          set -euo pipefail
 
-          # 过滤掉注释和空行
-          grep -Ev '^[[:space:]]*(#|$)' images.txt > /tmp/images.clean || true
+          # ========= 1. 登录目标仓库 =========
+          echo "$ALIYUN_REGISTRY_PASSWORD" \
+            | skopeo login -u "$ALIYUN_REGISTRY_USER" --password-stdin "$ALIYUN_REGISTRY"
 
-          # ---- Pass 1：检测跨命名空间的同名镜像 ----
-          declare -A ns_map=() duplicates=()
-          while IFS= read -r line; do
-            image=$(get_image "$line"); image="${image%%@*}"
-            name_tag="${image##*/}"
-            name="${name_tag%%:*}"
-            ns="${image%/*}"; [[ "$ns" == "$image" ]] && ns=""
-            ns="${ns:-}_"
-            if [[ -n "${ns_map[$name]:-}" ]]; then
-              [[ "${ns_map[$name]}" != "$ns" ]] && duplicates[$name]=1
+          # ========= 2. 读取 images.txt（过滤空行和注释） =========
+          mapfile -t lines < <(grep -vE '^[[:space:]]*(#|$)' images.txt || true)
+          echo "共读取到 ${#lines[@]} 个镜像"
+
+          # ========= 3. 第一遍：检测重名（跨命名空间同名镜像） =========
+          declare -A ns_of_image
+          declare -A duplicate_images
+
+          for line in "${lines[@]}"; do
+            image=$(echo "$line" | awk '{print $NF}')
+            image="${image%%@*}"
+            image_name_tag="${image##*/}"
+            image_name="${image_name_tag%%:*}"
+            name_space=$(echo "$image" | awk -F'/' \
+              '{if (NF==3) print $2; else if (NF==2) print $1; else print ""}')
+
+            key="${image_name}"
+            if [[ -n "${ns_of_image[$key]:-}" ]]; then
+              if [[ "${ns_of_image[$key]}" != "${name_space}_" ]]; then
+                echo "duplicate image name: $image_name"
+                duplicate_images[$key]=1
+              fi
             else
-              ns_map[$name]="$ns"
+              ns_of_image[$key]="${name_space}_"   # 加 _ 确保非空，便于判断
             fi
-          done < /tmp/images.clean
+          done
 
-          # ---- Pass 2：pull / tag / push ----
-          total=$(wc -l < /tmp/images.clean)
-          idx=0; failures=0
-          while IFS= read -r line; do
-            idx=$((idx+1))
-            image=$(get_image "$line"); image="${image%%@*}"
-            platform=$(get_platform "$line")
+          # ========= 4. 第二遍：生成任务清单 src|dst|platform =========
+          : > /tmp/tasks.txt
+          for line in "${lines[@]}"; do
+            platform=$(echo "$line" \
+              | awk -F'--platform[ =]' '{if (NF>1) print $2}' \
+              | awk '{print $1}')
+            image=$(echo "$line" | awk '{print $NF}')
+            image_name_tag="${image##*/}"
+            image_name="${image_name_tag%%:*}"
+            name_space=$(echo "$image" | awk -F'/' \
+              '{if (NF==3) print $2; else if (NF==2) print $1; else print ""}')
 
-            name_tag="${image##*/}"
-            name="${name_tag%%:*}"
-            ns="${image%/*}"; [[ "$ns" == "$image" ]] && ns=""
-
+            # 平台前缀
             platform_prefix=""
-            [[ -n "$platform" ]] && platform_prefix="${platform//\//_}_"
-            ns_prefix=""
-            [[ -n "${duplicates[$name]:-}" && -n "$ns" ]] && ns_prefix="${ns}_"
-
-            dst="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/${platform_prefix}${ns_prefix}${name_tag}"
-
-            echo "::group::[$idx/$total] $line"
-            if ! docker pull $line; then
-              echo "::error::pull failed: $line"
-              failures=$((failures+1)); echo "::endgroup::"; continue
+            if [[ -n "$platform" ]]; then
+              platform_prefix="${platform//\//_}_"
             fi
-            docker tag "$image" "$dst"
-            if ! docker push "$dst"; then
-              echo "::error::push failed: $dst"
-              failures=$((failures+1))
+
+            # 重名且命名空间非空 → 命名空间前缀
+            name_space_prefix=""
+            if [[ -n "${duplicate_images[$image_name]:-}" && -n "$name_space" ]]; then
+              name_space_prefix="${name_space}_"
             fi
-            # 合并成一条命令删除本地两个 tag
-            docker rmi "$image" "$dst" >/dev/null 2>&1 || true
-            echo "::endgroup::"
-          done < /tmp/images.clean
 
-          echo "Disk after sync:"; df -hT
+            image_name_tag="${image_name_tag%%@*}"   # 去掉 @sha256
+            new_image="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/${platform_prefix}${name_space_prefix}${image_name_tag}"
 
-          if [ "$failures" -gt 0 ]; then
-            echo "::error::$failures image(s) failed"
+            echo "$image|$new_image|$platform" >> /tmp/tasks.txt
+          done
+
+          echo "==================== 任务清单 ===================="
+          cat /tmp/tasks.txt
+          echo "=================================================="
+
+          # ========= 5. 定义单个同步函数 =========
+          sync_one() {
+            local line="$1"
+            local src dst platform p_os p_arch p_variant
+            IFS='|' read -r src dst platform <<< "$line"
+
+            echo ">>> [START] $src  ->  $dst"
+            local args=(--retry-times 3)
+
+            if [[ -n "$platform" ]]; then
+              IFS='/' read -r p_os p_arch p_variant <<< "$platform"
+              args+=(--override-os "$p_os" --override-arch "$p_arch")
+              [[ -n "$p_variant" ]] && args+=(--override-variant "$p_variant")
+            fi
+
+            # skopeo 流式复制，不落盘，无需 docker daemon
+            if skopeo copy "${args[@]}" "docker://$src" "docker://$dst"; then
+              echo "<<< [DONE ] $src  ->  $dst"
+            else
+              echo "!!! [FAIL ] $src  ->  $dst"
+              return 1
+            fi
+          }
+          export -f sync_one
+
+          # ========= 6. 并行执行 =========
+          if ! xargs -P "$PARALLEL" -I{} bash -c 'sync_one "$@"' _ {} < /tmp/tasks.txt; then
+            echo "::error::部分镜像同步失败，请查看上方日志"
             exit 1
           fi
+
+          echo "::notice::全部镜像同步完成"
