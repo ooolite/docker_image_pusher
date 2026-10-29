@@ -2,18 +2,19 @@ name: Docker
 
 on:
   workflow_dispatch:
+    inputs:
+      force_push:
+        description: '强制覆盖（忽略内容 MD5/digest 一致判断）'
+        type: boolean
+        default: false
   push:
     branches: [ main ]
-  # 时区注意：GitHub Actions 使用 UTC，北京时间 = UTC + 8
-  # 想要北京时间 21:00 运行 → UTC 13:00
   schedule:
     - cron: '0 13 * * *'
 
-# 最小权限
 permissions:
   contents: read
 
-# 防止定时任务和 push 触发的运行撞车
 concurrency:
   group: docker-sync
   cancel-in-progress: false
@@ -23,11 +24,11 @@ env:
   ALIYUN_NAME_SPACE: ${{ secrets.ALIYUN_NAME_SPACE }}
   ALIYUN_REGISTRY_USER: ${{ secrets.ALIYUN_REGISTRY_USER }}
   ALIYUN_REGISTRY_PASSWORD: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
+  FORCE_PUSH: ${{ github.event.inputs.force_push == 'true' && 'true' || 'false' }}
 
 jobs:
   sync:
-    name: Sync images to Aliyun
-    # 固定 22.04 而非 latest，避免 24.04 与 maximize-build-space 的兼容问题
+    name: Sync images to Aliyun (content-digest based)
     runs-on: ubuntu-22.04
     timeout-minutes: 360
 
@@ -39,21 +40,14 @@ jobs:
           swap-size-mb: 128
           remove-dotnet: 'true'
           remove-haskell: 'true'
-          # 空间仍不够时按需开启
-          # remove-android: 'true'
-          # remove-codeql: 'true'
           build-mount-path: '/var/lib/docker/'
 
       - name: Restart docker
         run: sudo service docker restart
 
-      - name: Show disk space after resize
-        run: df -hT /
-
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 用官方 action 登录，避免密码出现在命令行/日志中
       - name: Login to Aliyun Registry
         uses: docker/login-action@v3
         with:
@@ -61,7 +55,7 @@ jobs:
           username: ${{ env.ALIYUN_REGISTRY_USER }}
           password: ${{ env.ALIYUN_REGISTRY_PASSWORD }}
 
-      - name: Pull / Tag / Push images
+      - name: Pull / Tag / Push images (skip if content digest matches)
         shell: bash
         run: |
           set -euo pipefail
@@ -79,10 +73,36 @@ jobs:
             done
           }
 
+          # 取镜像"内容指纹"。有 platform 时取对应子 manifest 的 digest，
+          # 否则取顶层 digest（多架构时为 manifest list digest）。
+          # 参数：<image> [platform]
+          # 成功 -> stdout 输出 digest，返回 0
+          # 失败（不存在/网络错/无对应平台）-> 返回 1
+          get_digest() {
+            local img="$1" plat="${2:-}" out
+            if [[ -n "$plat" ]]; then
+              # 取指定平台的子 manifest digest
+              out=$(docker buildx imagetools inspect --raw "$img" 2>/dev/null \
+                    | python3 -c '
+          import json,sys
+          plat=sys.argv[1]
+          want_arch, _, want_var = plat.partition("/")
+          d=json.load(sys.stdin)
+          for m in d.get("manifests", []):
+              p=m.get("platform", {})
+              if p.get("os")=="linux" and p.get("architecture")==want_arch and (not want_var or p.get("variant")==want_var):
+                  print(m["digest"]); break
+          ' "$plat") || return 1
+              [[ -n "$out" ]] && { echo "$out"; return 0; } || return 1
+            else
+              out=$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$img" 2>/dev/null) || return 1
+              [[ -n "$out" ]] && { echo "$out"; return 0; } || return 1
+            fi
+          }
+
           # ---------- 一次性读取 images.txt ----------
           lines=()
           while IFS= read -r line || [[ -n "$line" ]]; do
-            # 忽略空行（含只有空白的行）与注释行
             [[ "$line" =~ ^[[:space:]]*(#|$) ]] && continue
             lines+=("$line")
           done < images.txt
@@ -96,15 +116,15 @@ jobs:
           declare -A first_ns duplicate
           for line in "${lines[@]}"; do
             image=$(awk '{print $NF}' <<< "$line")
-            image="${image%%@*}"                    # 去掉 @sha256:...
+            image="${image%%@*}"
             image_name_tag="${image##*/}"
             image_name="${image_name_tag%%:*}"
 
             IFS='/' read -r -a parts <<< "$image"
             case "${#parts[@]}" in
-              3) name_space="${parts[1]}" ;;        # kasmweb/nginx:xx
-              2) name_space="${parts[0]}" ;;        # nginx:xx
-              *) name_space="" ;;                   # 无命名空间
+              3) name_space="${parts[1]}" ;;
+              2) name_space="${parts[0]}" ;;
+              *) name_space="" ;;
             esac
 
             if [[ -n "${first_ns[$image_name]+x}" ]]; then
@@ -117,11 +137,14 @@ jobs:
             fi
           done
 
-          # ---------- 第二遍：拉取 → 重命名 → 推送 ----------
+          # ---------- 第二遍：内容 digest 比对 → 不一致才推 ----------
+          pushed=0
+          skipped=0
+          failed=()
+
           for line in "${lines[@]}"; do
             echo "::group::Processing $line"
 
-            # 解析 --platform（支持 `--platform x` 与 `--platform=x`）
             platform=""
             if [[ "$line" =~ --platform[=\ ]([^ ]+) ]]; then
               platform="${BASH_REMATCH[1]}"
@@ -148,23 +171,74 @@ jobs:
 
             new_image="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/${platform_prefix}${name_space_prefix}${image_name_tag}"
 
-            echo "Pull: $image"
-            if [[ -n "$platform" ]]; then
-              retry docker pull --platform "$platform" "$image"
-            else
-              retry docker pull "$image"
+            # -------- 核心：内容 digest 比对 --------
+            src_digest=$(get_digest "$image" "$platform" || true)
+            if [[ -z "$src_digest" ]]; then
+              # 源镜像本身都拿不到 digest，可能是网络问题或 tag 不存在
+              failed+=("$image (source digest unavailable)")
+              echo "::error::Cannot resolve source digest: $image"
+              echo "::endgroup::"
+              continue
+            fi
+            echo "source digest: $src_digest"
+
+            dst_digest=$(get_digest "$new_image" "$platform" || true)
+            echo "dest digest:   ${dst_digest:-<none>}"
+
+            if [[ "$FORCE_PUSH" != "true" ]] && [[ -n "$dst_digest" ]] && [[ "$src_digest" == "$dst_digest" ]]; then
+              echo "::notice::Content digest identical, skip: $new_image"
+              skipped=$((skipped + 1))
+              echo "::endgroup::"
+              continue
+            fi
+            if [[ -n "$dst_digest" ]]; then
+              echo "::warning::Digest differs, will overwrite: $new_image"
+              echo "  src=$src_digest"
+              echo "  dst=$dst_digest"
             fi
 
-            echo "Tag:  $image -> $new_image"
+            # -------- 拉取 --------
+            echo "Pull: $image"
+            if [[ -n "$platform" ]]; then
+              retry docker pull --platform "$platform" "$image" || { failed+=("$image (pull)"); echo "::error::Pull failed"; echo "::endgroup::"; continue; }
+            else
+              retry docker pull "$image" || { failed+=("$image (pull)"); echo "::error::Pull failed"; echo "::endgroup::"; continue; }
+            fi
+
+            # -------- 推送 --------
             docker tag "$image" "$new_image"
-
             echo "Push: $new_image"
-            retry docker push "$new_image"
+            if ! retry docker push "$new_image"; then
+              failed+=("$new_image (push)")
+              echo "::error::Push failed"
+              echo "::endgroup::"
+              continue
+            fi
 
-            # 清理（多标签场景下 rmi 可能失败，忽略）
             docker rmi "$image" "$new_image" || true
-
-            echo "Disk usage:"
+            pushed=$((pushed + 1))
             df -hT / | awk 'NR==1 || NR==2'
             echo "::endgroup::"
           done
+
+          # ---------- Summary ----------
+          {
+            echo "## Docker Sync Summary (content-digest based)"
+            echo ""
+            echo "| Status | Count |"
+            echo "|---|---|"
+            echo "| Pushed (content changed/new) | $pushed |"
+            echo "| Skipped (content identical)  | $skipped |"
+            echo "| Failed                       | ${#failed[@]} |"
+            echo "| FORCE_PUSH                   | $FORCE_PUSH |"
+            if (( ${#failed[@]} > 0 )); then
+              echo ""
+              echo "### Failed images"
+              for img in "${failed[@]}"; do echo "- \`$img\`"; done
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if (( ${#failed[@]} > 0 )); then
+            echo "::error::${#failed[@]} image(s) failed, see summary."
+            exit 1
+          fi
