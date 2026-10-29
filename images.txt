@@ -73,6 +73,7 @@ diegosouzapw/omniroute:latest
 ghcr.io/open-webui/open-webui:main
 soulter/astrbot:latest
 mlikiowa/napcat-docker:latest
+qdrant/qdrant:latest
 # RSS相关工具
 freshrss/freshrss:latest
 ghcr.io/weserv/images:5.x
