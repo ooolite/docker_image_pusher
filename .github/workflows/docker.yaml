@@ -2,250 +2,121 @@ name: Docker
 
 on:
   workflow_dispatch:
-    inputs:
-      force_push:
-        description: '强制覆盖（忽略 digest 一致判断）'
-        type: boolean
-        default: false
   push:
     branches: [ main ]
   schedule:
-    # UTC 13:00 = 北京时间 21:00
+    # 注意：GitHub Actions 用 UTC。北京时间 21:00 = UTC 13:00
     - cron: '0 13 * * *'
 
-permissions:
-  contents: read
-
 concurrency:
-  group: docker-sync
-  cancel-in-progress: false
+  group: docker-sync-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
-  ALIYUN_REGISTRY: ${{ secrets.ALIYUN_REGISTRY }}
-  ALIYUN_NAME_SPACE: ${{ secrets.ALIYUN_NAME_SPACE }}
-  ALIYUN_REGISTRY_USER: ${{ secrets.ALIYUN_REGISTRY_USER }}
-  ALIYUN_REGISTRY_PASSWORD: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
-  FORCE_PUSH: ${{ github.event.inputs.force_push == 'true' && 'true' || 'false' }}
+  TZ: Asia/Shanghai
 
 jobs:
   sync:
-    name: Sync images to Aliyun (digest based)
-    runs-on: ubuntu-22.04
-    timeout-minutes: 360
+    name: Sync Images (skopeo)
+    runs-on: ubuntu-latest
+    timeout-minutes: 180   # skopeo 直接 registry-to-registry，比 docker pull/push 快很多，3 小时足够
 
     steps:
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@v10
-        with:
-          root-reserve-mb: 2048
-          swap-size-mb: 128
-          remove-dotnet: 'true'
-          remove-haskell: 'true'
-          build-mount-path: '/var/lib/docker/'
-
-      - name: Restart docker
-        run: sudo service docker restart
-
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Login to Aliyun Registry
+      - name: Install skopeo
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo
+
+      - name: Login to Aliyun (docker login，skopeo 自动复用凭证)
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.ALIYUN_REGISTRY }}
-          username: ${{ env.ALIYUN_REGISTRY_USER }}
-          password: ${{ env.ALIYUN_REGISTRY_PASSWORD }}
+          registry: ${{ secrets.ALIYUN_REGISTRY }}
+          username: ${{ secrets.ALIYUN_REGISTRY_USER }}
+          password: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
 
-      - name: Pull / Tag / Push (skip when digest identical)
-        shell: bash
+      - name: Sync images
+        env:
+          ALIYUN_REGISTRY: ${{ secrets.ALIYUN_REGISTRY }}
+          ALIYUN_NAME_SPACE: ${{ secrets.ALIYUN_NAME_SPACE }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
 
-          retry() {
-            local -i n=0 max=3
-            until "$@"; do
-              ((n++)) || true
-              if (( n >= max )); then
-                echo "::error::Command failed after $max attempts: $*"
-                return 1
-              fi
-              echo "Retry $n/$max: $*"
-              sleep 5
-            done
-          }
+          # ---------- 解析工具函数 ----------
+          get_image()    { awk '{print $NF}' <<< "$1"; }
+          get_platform() { awk -F'--platform[ =]' '{if (NF>1) print $2}' <<< "$1" | awk '{print $1}'; }
 
-          # 取某 tag 在指定平台上的内容 digest：
-          #  - tag 指向 manifest list/index：返回该平台子 manifest 的 digest
-          #  - tag 指向单 manifest：返回它自身原始字节的 sha256（= DCD）
-          # 参数: <image> [platform=linux/amd64]
-          # 成功 -> stdout 输出 digest；失败 -> 返回 1
-          tag_platform_digest() {
-            local img="$1" plat="${2:-linux/amd64}"
-            local arch="${plat%%/*}" var=""
-            [[ "$plat" == */* ]] && var="${plat##*/}"
-            local raw
-            raw=$(docker buildx imagetools inspect --raw "$img" 2>/dev/null) || return 1
-            printf '%s' "$raw" | python3 -c '
-          import json,sys,hashlib
-          arch,var=sys.argv[1],sys.argv[2] or None
-          raw=sys.stdin.read()
-          try: d=json.loads(raw)
-          except Exception: sys.exit(1)
-          if "manifests" in d:
-              for m in d["manifests"]:
-                  p=m.get("platform",{})
-                  if p.get("os")=="linux" and p.get("architecture")==arch and (var is None or p.get("variant")==var):
-                      print(m["digest"]); sys.exit(0)
-              sys.exit(1)
-          print("sha256:"+hashlib.sha256(raw.encode()).hexdigest())
-          ' "$arch" "$var"
-          }
+          # 过滤注释/空行
+          grep -Ev '^[[:space:]]*(#|$)' images.txt > /tmp/images.clean || true
 
-          # ---------- 读取 images.txt ----------
-          lines=()
-          while IFS= read -r line || [[ -n "$line" ]]; do
-            [[ "$line" =~ ^[[:space:]]*(#|$) ]] && continue
-            lines+=("$line")
-          done < images.txt
-
-          if (( ${#lines[@]} == 0 )); then
-            echo "No images to process."
-            exit 0
-          fi
-
-          # ---------- 第一遍：检测镜像名重名 ----------
-          declare -A first_ns duplicate
-          for line in "${lines[@]}"; do
-            image=$(awk '{print $NF}' <<< "$line")
-            image="${image%%@*}"
-            image_name_tag="${image##*/}"
-            image_name="${image_name_tag%%:*}"
-
-            IFS='/' read -r -a parts <<< "$image"
-            case "${#parts[@]}" in
-              3) name_space="${parts[1]}" ;;
-              2) name_space="${parts[0]}" ;;
-              *) name_space="" ;;
-            esac
-
-            if [[ -n "${first_ns[$image_name]+x}" ]]; then
-              if [[ "${first_ns[$image_name]}" != "$name_space" ]]; then
-                echo "duplicate image name: $image_name"
-                duplicate[$image_name]=1
-              fi
+          # ---------- Pass 1：检测跨命名空间同名镜像 ----------
+          declare -A ns_map=() duplicates=()
+          while IFS= read -r line; do
+            image=$(get_image "$line"); image="${image%%@*}"
+            name_tag="${image##*/}"
+            name="${name_tag%%:*}"
+            ns="${image%/*}"; [[ "$ns" == "$image" ]] && ns=""
+            ns="${ns:-}_"
+            if [[ -n "${ns_map[$name]:-}" ]]; then
+              [[ "${ns_map[$name]}" != "$ns" ]] && duplicates[$name]=1
             else
-              first_ns[$image_name]="$name_space"
+              ns_map[$name]="$ns"
             fi
-          done
+          done < /tmp/images.clean
 
-          # ---------- 第二遍：digest 比较 → 不一致才推 ----------
-          pushed=0
-          skipped=0
-          failed=()
+          # ---------- Pass 2：skopeo copy ----------
+          total=$(wc -l < /tmp/images.clean)
+          idx=0; failures=0
 
-          for line in "${lines[@]}"; do
-            echo "::group::Processing $line"
+          while IFS= read -r line; do
+            idx=$((idx+1))
+            image=$(get_image "$line"); image="${image%%@*}"
+            platform=$(get_platform "$line")
 
-            platform=""
-            if [[ "$line" =~ --platform[=\ ]([^ ]+) ]]; then
-              platform="${BASH_REMATCH[1]}"
-            fi
+            # 解析目标名称
+            name_tag="${image##*/}"
+            name="${name_tag%%:*}"
+            ns="${image%/*}"; [[ "$ns" == "$image" ]] && ns=""
+
             platform_prefix=""
             [[ -n "$platform" ]] && platform_prefix="${platform//\//_}_"
-            # 比较/拉取使用的平台：条目有指定就用指定，否则 linux/amd64
-            cmp_platform="${platform:-linux/amd64}"
+            ns_prefix=""
+            [[ -n "${duplicates[$name]:-}" && -n "$ns" ]] && ns_prefix="${ns}_"
 
-            image=$(awk '{print $NF}' <<< "$line")
-            image_clean="${image%%@*}"
-            image_name_tag="${image_clean##*/}"
-            image_name="${image_name_tag%%:*}"
+            dst="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/${platform_prefix}${ns_prefix}${name_tag}"
 
-            IFS='/' read -r -a parts <<< "$image_clean"
-            case "${#parts[@]}" in
-              3) name_space="${parts[1]}" ;;
-              2) name_space="${parts[0]}" ;;
-              *) name_space="" ;;
-            esac
+            echo "::group::[$idx/$total] $image -> $dst"
 
-            name_space_prefix=""
-            if [[ -n "${duplicate[$image_name]:-}" && -n "$name_space" ]]; then
-              name_space_prefix="${name_space}_"
-            fi
+            # 构建 skopeo copy 参数
+            skopeo_args=(copy --retry-times 3 --insecure-policy)
 
-            new_image="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/${platform_prefix}${name_space_prefix}${image_name_tag}"
-
-            # ---- 取两端 digest ----
-            src_digest=$(tag_platform_digest "$image"     "$cmp_platform" || true)
-            if [[ -z "$src_digest" ]]; then
-              echo "::error::Cannot resolve source digest: $image ($cmp_platform)"
-              failed+=("$image (source digest unavailable)")
-              echo "::endgroup::"
-              continue
-            fi
-            dst_digest=$(tag_platform_digest "$new_image" "$cmp_platform" || true)
-
-            echo "src($cmp_platform): $src_digest"
-            echo "dst($cmp_platform): ${dst_digest:-<none>}"
-
-            # ---- 判定 ----
-            if [[ "$FORCE_PUSH" != "true" && -n "$dst_digest" && "$src_digest" == "$dst_digest" ]]; then
-              echo "::notice::Digest identical, skip: $new_image"
-              skipped=$((skipped + 1))
-              echo "::endgroup::"
-              continue
-            fi
-            if [[ -n "$dst_digest" ]]; then
-              echo "::warning::Digest differs, will push: $new_image"
-              echo "  src=$src_digest"
-              echo "  dst=$dst_digest"
-            else
-              echo "::notice::Target not found, will push: $new_image"
-            fi
-
-            # ---- Pull ----
-            echo "Pull: $image"
             if [[ -n "$platform" ]]; then
-              retry docker pull --platform "$platform" "$image" \
-                || { failed+=("$image (pull)"); echo "::error::Pull failed"; echo "::endgroup::"; continue; }
+              # 单架构：--platform 格式为 os/arch[/variant]，例如 linux/amd64
+              os="${platform%%/*}"
+              arch="${platform#*/}"; arch="${arch%%/*}"
+              variant=""
+              [[ "$platform" == */*/* ]] && variant="${platform##*/}"
+
+              skopeo_args+=(--override-os "$os" --override-arch "$arch")
+              [[ -n "$variant" ]] && skopeo_args+=(--override-variant "$variant")
             else
-              retry docker pull "$image" \
-                || { failed+=("$image (pull)"); echo "::error::Pull failed"; echo "::endgroup::"; continue; }
+              # 无 --platform 行：复制全部架构（--all）
+              skopeo_args+=(--all)
             fi
 
-            # ---- Tag + Push ----
-            docker tag "$image" "$new_image"
-            echo "Push: $new_image"
-            if ! retry docker push "$new_image"; then
-              failed+=("$new_image (push)")
-              echo "::error::Push failed"
-              echo "::endgroup::"
-              continue
+            if ! skopeo "${skopeo_args[@]}" "docker://$image" "docker://$dst"; then
+              echo "::error::skopeo copy failed: $image -> $dst"
+              failures=$((failures+1))
             fi
 
-            docker rmi "$image" "$new_image" || true
-            pushed=$((pushed + 1))
-            df -hT / | awk 'NR==1 || NR==2'
             echo "::endgroup::"
-          done
+          done < /tmp/images.clean
 
-          # ---------- Summary ----------
-          {
-            echo "## Docker Sync Summary (digest based)"
-            echo ""
-            echo "| Status | Count |"
-            echo "|---|---|"
-            echo "| Pushed (changed/new)      | $pushed |"
-            echo "| Skipped (digest identical)| $skipped |"
-            echo "| Failed                    | ${#failed[@]} |"
-            echo "| FORCE_PUSH                | $FORCE_PUSH |"
-            if (( ${#failed[@]} > 0 )); then
-              echo ""
-              echo "### Failed images"
-              for img in "${failed[@]}"; do echo "- \`$img\`"; done
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          if (( ${#failed[@]} > 0 )); then
-            echo "::error::${#failed[@]} image(s) failed, see summary."
+          echo "======================================"
+          if [ "$failures" -gt 0 ]; then
+            echo "::error::$failures image(s) failed"
             exit 1
           fi
+          echo "All $total image(s) synced successfully"
