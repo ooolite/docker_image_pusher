@@ -4,12 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
-  # 时区注意：GitHub Actions 使用 UTC 时间，北京时间需要减 8 小时
-  # 想要北京时间 21:00 运行 → 设置 UTC 13:00
   schedule:
     - cron: '0 13 * * *'
 
-# 避免 push 与 schedule 同时触发时重复运行
 concurrency:
   group: docker-sync
   cancel-in-progress: false
@@ -19,7 +16,11 @@ env:
   ALIYUN_NAME_SPACE: "${{ secrets.ALIYUN_NAME_SPACE }}"
   ALIYUN_REGISTRY_USER: "${{ secrets.ALIYUN_REGISTRY_USER }}"
   ALIYUN_REGISTRY_PASSWORD: "${{ secrets.ALIYUN_REGISTRY_PASSWORD }}"
-  PARALLEL: "8"   # 并发数，可根据 runner 网络情况调整（一般 6~12）
+  # 可选：填了就走认证，彻底解决 Docker Hub 限流
+  DOCKERHUB_USER: "${{ secrets.DOCKERHUB_USER }}"
+  DOCKERHUB_TOKEN: "${{ secrets.DOCKERHUB_TOKEN }}"
+  PARALLEL: "6"          # 降到 6，减轻 ACR 分块上传压力
+  RETRY_TIMES: "5"
 
 jobs:
   sync:
@@ -40,62 +41,53 @@ jobs:
         run: |
           set -euo pipefail
 
-          # ========= 1. 登录目标仓库 =========
+          # ===== 1. 登录 =====
           echo "$ALIYUN_REGISTRY_PASSWORD" \
             | skopeo login -u "$ALIYUN_REGISTRY_USER" --password-stdin "$ALIYUN_REGISTRY"
 
-          # ========= 2. 读取 images.txt（过滤空行和注释） =========
+          if [[ -n "${DOCKERHUB_USER:-}" && -n "${DOCKERHUB_TOKEN:-}" ]]; then
+            echo ">>> 登录 Docker Hub（解决 toomanyrequests）"
+            echo "$DOCKERHUB_TOKEN" | skopeo login -u "$DOCKERHUB_USER" --password-stdin docker.io
+            # docker.n8n.io 是 Docker Hub 代理，认证同源
+            echo "$DOCKERHUB_TOKEN" | skopeo login -u "$DOCKERHUB_USER" --password-stdin docker.n8n.io || true
+          else
+            echo "::warning::未配置 DOCKERHUB_USER/TOKEN，docker.io 可能触发限流"
+          fi
+
+          # ===== 2. 读取 images.txt =====
           mapfile -t lines < <(grep -vE '^[[:space:]]*(#|$)' images.txt || true)
           echo "共读取到 ${#lines[@]} 个镜像"
 
-          # ========= 3. 第一遍：检测重名（跨命名空间同名镜像） =========
+          # ===== 3. 重名检测 =====
           declare -A ns_of_image
           declare -A duplicate_images
-
           for line in "${lines[@]}"; do
-            image=$(echo "$line" | awk '{print $NF}')
-            image="${image%%@*}"
-            image_name_tag="${image##*/}"
-            image_name="${image_name_tag%%:*}"
-            name_space=$(echo "$image" | awk -F'/' \
-              '{if (NF==3) print $2; else if (NF==2) print $1; else print ""}')
-
+            image=$(echo "$line" | awk '{print $NF}'); image="${image%%@*}"
+            image_name_tag="${image##*/}"; image_name="${image_name_tag%%:*}"
+            name_space=$(echo "$image" | awk -F'/' '{if (NF==3) print $2; else if (NF==2) print $1; else print ""}')
             key="${image_name}"
             if [[ -n "${ns_of_image[$key]:-}" ]]; then
-              if [[ "${ns_of_image[$key]}" != "${name_space}_" ]]; then
-                echo "duplicate image name: $image_name"
-                duplicate_images[$key]=1
-              fi
+              [[ "${ns_of_image[$key]}" != "${name_space}_" ]] && duplicate_images[$key]=1
             else
-              ns_of_image[$key]="${name_space}_"   # 加 _ 确保非空，便于判断
+              ns_of_image[$key]="${name_space}_"
             fi
           done
 
-          # ========= 4. 第二遍：生成任务清单 src|dst|platform =========
+          # ===== 4. 生成任务清单 =====
           : > /tmp/tasks.txt
           for line in "${lines[@]}"; do
-            platform=$(echo "$line" \
-              | awk -F'--platform[ =]' '{if (NF>1) print $2}' \
-              | awk '{print $1}')
+            platform=$(echo "$line" | awk -F'--platform[ =]' '{if (NF>1) print $2}' | awk '{print $1}')
             image=$(echo "$line" | awk '{print $NF}')
-            image_name_tag="${image##*/}"
-            image_name="${image_name_tag%%:*}"
-            name_space=$(echo "$image" | awk -F'/' \
-              '{if (NF==3) print $2; else if (NF==2) print $1; else print ""}')
+            image_name_tag="${image##*/}"; image_name="${image_name_tag%%:*}"
+            name_space=$(echo "$image" | awk -F'/' '{if (NF==3) print $2; else if (NF==2) print $1; else print ""}')
 
-            # 平台前缀
             platform_prefix=""
-            if [[ -n "$platform" ]]; then
-              platform_prefix="${platform//\//_}_"
-            fi
+            [[ -n "$platform" ]] && platform_prefix="${platform//\//_}_"
 
-            # 重名且命名空间非空 → 命名空间前缀
             name_space_prefix=""
-            if [[ -n "${duplicate_images[$image_name]:-}" && -n "$name_space" ]]; then
-              name_space_prefix="${name_space}_"
-            fi
+            [[ -n "${duplicate_images[$image_name]:-}" && -n "$name_space" ]] && name_space_prefix="${name_space}_"
 
-            image_name_tag="${image_name_tag%%@*}"   # 去掉 @sha256
+            image_name_tag="${image_name_tag%%@*}"
             new_image="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/${platform_prefix}${name_space_prefix}${image_name_tag}"
 
             echo "$image|$new_image|$platform" >> /tmp/tasks.txt
@@ -105,35 +97,72 @@ jobs:
           cat /tmp/tasks.txt
           echo "=================================================="
 
-          # ========= 5. 定义单个同步函数 =========
+          # ===== 5. 单任务函数（日志独立文件，避免交错）=====
+          mkdir -p /tmp/logs
           sync_one() {
             local line="$1"
             local src dst platform p_os p_arch p_variant
             IFS='|' read -r src dst platform <<< "$line"
 
-            echo ">>> [START] $src  ->  $dst"
-            local args=(--retry-times 3)
+            local safe; safe=$(echo "$src" | tr '/:@' '___')
+            local log="/tmp/logs/${safe}.log"
 
-            if [[ -n "$platform" ]]; then
-              IFS='/' read -r p_os p_arch p_variant <<< "$platform"
-              args+=(--override-os "$p_os" --override-arch "$p_arch")
-              [[ -n "$p_variant" ]] && args+=(--override-variant "$p_variant")
-            fi
+            {
+              echo ">>> [START] $src  ->  $dst"
+              local args=(--retry-times "$RETRY_TIMES")
+              # 关键：强制重新压缩，缓解阿里云 ACR 的 blob type invalid
+              args+=(--dest-compress --dest-compress-format gzip)
 
-            # skopeo 流式复制，不落盘，无需 docker daemon
-            if skopeo copy "${args[@]}" "docker://$src" "docker://$dst"; then
+              if [[ -n "$platform" ]]; then
+                IFS='/' read -r p_os p_arch p_variant <<< "$platform"
+                args+=(--override-os "$p_os" --override-arch "$p_arch")
+                [[ -n "$p_variant" ]] && args+=(--override-variant "$p_variant")
+              fi
+
+              echo "cmd: skopeo copy ${args[*]} docker://$src docker://$dst"
+              skopeo copy "${args[@]}" "docker://$src" "docker://$dst"
               echo "<<< [DONE ] $src  ->  $dst"
+            } > "$log" 2>&1
+
+            local rc=$?
+            if [[ $rc -ne 0 ]]; then
+              echo "!!! [FAIL ] $src  ->  $dst  (log: $log)"
             else
-              echo "!!! [FAIL ] $src  ->  $dst"
-              return 1
+              echo "<<< [DONE ] $src  ->  $dst"
             fi
+            return $rc
           }
           export -f sync_one
+          export RETRY_TIMES
 
-          # ========= 6. 并行执行 =========
-          if ! xargs -P "$PARALLEL" -I{} bash -c 'sync_one "$@"' _ {} < /tmp/tasks.txt; then
-            echo "::error::部分镜像同步失败，请查看上方日志"
+          # ===== 6. 并行执行，收集失败 =====
+          set +e
+          xargs -P "$PARALLEL" -I{} bash -c 'sync_one "$@"' _ {} < /tmp/tasks.txt
+          xargs_rc=$?
+          set -e
+
+          # ===== 7. 汇总 =====
+          echo "==================== 失败日志 ===================="
+          failed=0
+          while IFS= read -r line; do
+            [[ -z "$line" ]] && continue
+            src=$(echo "$line" | awk -F'|' '{print $1}')
+            safe=$(echo "$src" | tr '/:@' '___')
+            log="/tmp/logs/${safe}.log"
+            if [[ -f "$log" ]] && ! grep -q '<<< \[DONE \]' "$log"; then
+              failed=$((failed+1))
+              echo "----- FAILED: $src -----"
+              tail -n 30 "$log"
+              echo
+            fi
+          done < /tmp/tasks.txt
+
+          echo "==================== 汇总 ===================="
+          total=$(grep -c . /tmp/tasks.txt || true)
+          echo "总数: $total, 失败: $failed"
+
+          if [[ $failed -gt 0 || $xargs_rc -ne 0 ]]; then
+            echo "::error::有 $failed 个镜像同步失败，详见上方日志"
             exit 1
           fi
-
-          echo "::notice::全部镜像同步完成"
+          echo "::notice::全部 $total 个镜像同步完成"
