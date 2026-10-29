@@ -4,12 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       force_push:
-        description: '强制覆盖（忽略内容 MD5/digest 一致判断）'
+        description: '强制覆盖（忽略 digest 一致判断）'
         type: boolean
         default: false
   push:
     branches: [ main ]
   schedule:
+    # UTC 13:00 = 北京时间 21:00
     - cron: '0 13 * * *'
 
 permissions:
@@ -28,7 +29,7 @@ env:
 
 jobs:
   sync:
-    name: Sync images to Aliyun (content-digest based)
+    name: Sync images to Aliyun (digest based)
     runs-on: ubuntu-22.04
     timeout-minutes: 360
 
@@ -55,7 +56,7 @@ jobs:
           username: ${{ env.ALIYUN_REGISTRY_USER }}
           password: ${{ env.ALIYUN_REGISTRY_PASSWORD }}
 
-      - name: Pull / Tag / Push images (skip if content digest matches)
+      - name: Pull / Tag / Push (skip when digest identical)
         shell: bash
         run: |
           set -euo pipefail
@@ -73,34 +74,34 @@ jobs:
             done
           }
 
-          # 取镜像"内容指纹"。有 platform 时取对应子 manifest 的 digest，
-          # 否则取顶层 digest（多架构时为 manifest list digest）。
-          # 参数：<image> [platform]
-          # 成功 -> stdout 输出 digest，返回 0
-          # 失败（不存在/网络错/无对应平台）-> 返回 1
-          get_digest() {
-            local img="$1" plat="${2:-}" out
-            if [[ -n "$plat" ]]; then
-              # 取指定平台的子 manifest digest
-              out=$(docker buildx imagetools inspect --raw "$img" 2>/dev/null \
-                    | python3 -c '
-          import json,sys
-          plat=sys.argv[1]
-          want_arch, _, want_var = plat.partition("/")
-          d=json.load(sys.stdin)
-          for m in d.get("manifests", []):
-              p=m.get("platform", {})
-              if p.get("os")=="linux" and p.get("architecture")==want_arch and (not want_var or p.get("variant")==want_var):
-                  print(m["digest"]); break
-          ' "$plat") || return 1
-              [[ -n "$out" ]] && { echo "$out"; return 0; } || return 1
-            else
-              out=$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$img" 2>/dev/null) || return 1
-              [[ -n "$out" ]] && { echo "$out"; return 0; } || return 1
-            fi
+          # 取某 tag 在指定平台上的内容 digest：
+          #  - tag 指向 manifest list/index：返回该平台子 manifest 的 digest
+          #  - tag 指向单 manifest：返回它自身原始字节的 sha256（= DCD）
+          # 参数: <image> [platform=linux/amd64]
+          # 成功 -> stdout 输出 digest；失败 -> 返回 1
+          tag_platform_digest() {
+            local img="$1" plat="${2:-linux/amd64}"
+            local arch="${plat%%/*}" var=""
+            [[ "$plat" == */* ]] && var="${plat##*/}"
+            local raw
+            raw=$(docker buildx imagetools inspect --raw "$img" 2>/dev/null) || return 1
+            printf '%s' "$raw" | python3 -c '
+          import json,sys,hashlib
+          arch,var=sys.argv[1],sys.argv[2] or None
+          raw=sys.stdin.read()
+          try: d=json.loads(raw)
+          except Exception: sys.exit(1)
+          if "manifests" in d:
+              for m in d["manifests"]:
+                  p=m.get("platform",{})
+                  if p.get("os")=="linux" and p.get("architecture")==arch and (var is None or p.get("variant")==var):
+                      print(m["digest"]); sys.exit(0)
+              sys.exit(1)
+          print("sha256:"+hashlib.sha256(raw.encode()).hexdigest())
+          ' "$arch" "$var"
           }
 
-          # ---------- 一次性读取 images.txt ----------
+          # ---------- 读取 images.txt ----------
           lines=()
           while IFS= read -r line || [[ -n "$line" ]]; do
             [[ "$line" =~ ^[[:space:]]*(#|$) ]] && continue
@@ -137,7 +138,7 @@ jobs:
             fi
           done
 
-          # ---------- 第二遍：内容 digest 比对 → 不一致才推 ----------
+          # ---------- 第二遍：digest 比较 → 不一致才推 ----------
           pushed=0
           skipped=0
           failed=()
@@ -151,6 +152,8 @@ jobs:
             fi
             platform_prefix=""
             [[ -n "$platform" ]] && platform_prefix="${platform//\//_}_"
+            # 比较/拉取使用的平台：条目有指定就用指定，否则 linux/amd64
+            cmp_platform="${platform:-linux/amd64}"
 
             image=$(awk '{print $NF}' <<< "$line")
             image_clean="${image%%@*}"
@@ -171,41 +174,45 @@ jobs:
 
             new_image="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/${platform_prefix}${name_space_prefix}${image_name_tag}"
 
-            # -------- 核心：内容 digest 比对 --------
-            src_digest=$(get_digest "$image" "$platform" || true)
+            # ---- 取两端 digest ----
+            src_digest=$(tag_platform_digest "$image"     "$cmp_platform" || true)
             if [[ -z "$src_digest" ]]; then
-              # 源镜像本身都拿不到 digest，可能是网络问题或 tag 不存在
+              echo "::error::Cannot resolve source digest: $image ($cmp_platform)"
               failed+=("$image (source digest unavailable)")
-              echo "::error::Cannot resolve source digest: $image"
               echo "::endgroup::"
               continue
             fi
-            echo "source digest: $src_digest"
+            dst_digest=$(tag_platform_digest "$new_image" "$cmp_platform" || true)
 
-            dst_digest=$(get_digest "$new_image" "$platform" || true)
-            echo "dest digest:   ${dst_digest:-<none>}"
+            echo "src($cmp_platform): $src_digest"
+            echo "dst($cmp_platform): ${dst_digest:-<none>}"
 
-            if [[ "$FORCE_PUSH" != "true" ]] && [[ -n "$dst_digest" ]] && [[ "$src_digest" == "$dst_digest" ]]; then
-              echo "::notice::Content digest identical, skip: $new_image"
+            # ---- 判定 ----
+            if [[ "$FORCE_PUSH" != "true" && -n "$dst_digest" && "$src_digest" == "$dst_digest" ]]; then
+              echo "::notice::Digest identical, skip: $new_image"
               skipped=$((skipped + 1))
               echo "::endgroup::"
               continue
             fi
             if [[ -n "$dst_digest" ]]; then
-              echo "::warning::Digest differs, will overwrite: $new_image"
+              echo "::warning::Digest differs, will push: $new_image"
               echo "  src=$src_digest"
               echo "  dst=$dst_digest"
+            else
+              echo "::notice::Target not found, will push: $new_image"
             fi
 
-            # -------- 拉取 --------
+            # ---- Pull ----
             echo "Pull: $image"
             if [[ -n "$platform" ]]; then
-              retry docker pull --platform "$platform" "$image" || { failed+=("$image (pull)"); echo "::error::Pull failed"; echo "::endgroup::"; continue; }
+              retry docker pull --platform "$platform" "$image" \
+                || { failed+=("$image (pull)"); echo "::error::Pull failed"; echo "::endgroup::"; continue; }
             else
-              retry docker pull "$image" || { failed+=("$image (pull)"); echo "::error::Pull failed"; echo "::endgroup::"; continue; }
+              retry docker pull "$image" \
+                || { failed+=("$image (pull)"); echo "::error::Pull failed"; echo "::endgroup::"; continue; }
             fi
 
-            # -------- 推送 --------
+            # ---- Tag + Push ----
             docker tag "$image" "$new_image"
             echo "Push: $new_image"
             if ! retry docker push "$new_image"; then
@@ -223,14 +230,14 @@ jobs:
 
           # ---------- Summary ----------
           {
-            echo "## Docker Sync Summary (content-digest based)"
+            echo "## Docker Sync Summary (digest based)"
             echo ""
             echo "| Status | Count |"
             echo "|---|---|"
-            echo "| Pushed (content changed/new) | $pushed |"
-            echo "| Skipped (content identical)  | $skipped |"
-            echo "| Failed                       | ${#failed[@]} |"
-            echo "| FORCE_PUSH                   | $FORCE_PUSH |"
+            echo "| Pushed (changed/new)      | $pushed |"
+            echo "| Skipped (digest identical)| $skipped |"
+            echo "| Failed                    | ${#failed[@]} |"
+            echo "| FORCE_PUSH                | $FORCE_PUSH |"
             if (( ${#failed[@]} > 0 )); then
               echo ""
               echo "### Failed images"
