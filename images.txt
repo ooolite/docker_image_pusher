@@ -68,9 +68,10 @@ rustdesk/rustdesk-server:latest
 #huobao/huobao-drama:latest
 docker.n8n.io/n8nio/n8n:latest
 ollama/ollama:latest
-ollama/ollama:rocm
+#ollama/ollama:rocm
 ghcr.io/ggml-org/llama.cpp:server
-ghcr.io/ggml-org/llama.cpp:server-rocm
+ghcr.io/ggml-org/llama.cpp:server-vulkan
+#ghcr.io/ggml-org/llama.cpp:server-rocm
 diegosouzapw/omniroute:latest
 ghcr.io/open-webui/open-webui:main
 soulter/astrbot:latest
