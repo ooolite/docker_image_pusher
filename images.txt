@@ -41,17 +41,17 @@ jxxghp/moviepilot-v2:latest
 jellyfin/jellyfin:latest
 linuxserver/qbittorrent:latest
 linuxserver/transmission:latest
-lscr.io/linuxserver/qbittorrent:5.2.0
-lscr.io/linuxserver/transmission:4.1.2
+#lscr.io/linuxserver/qbittorrent:5.2.0
+#lscr.io/linuxserver/transmission:4.1.2
 iyuucn/iyuuplus-dev:latest
 envyafish/byte-muse:latest
-envyafish/byte-muse:1.27.4
+#envyafish/byte-muse:1.27.4
 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
 suwmlee/bonita:latest
-suwmlee/bonita:0.27.1
+#suwmlee/bonita:0.27.1
 openlistteam/openlist:latest
 getmeili/meilisearch:latest
-getmeili/meilisearch:v1.48.3
+#getmeili/meilisearch:v1.48.3
 jiangrui1994/cloudsaver:latest
 ghcr.io/monlor/xiaoya-alist:latest
 #docker相关工具
@@ -66,11 +66,12 @@ rustdesk/rustdesk-server:latest
 # Ai相关工具
 #justsong/one-api:latest
 #huobao/huobao-drama:latest
+ghcr.io/openclaw/openclaw:latest
 docker.n8n.io/n8nio/n8n:latest
 ollama/ollama:latest
 #ollama/ollama:rocm
 ghcr.io/ggml-org/llama.cpp:server
-ghcr.io/ggml-org/llama.cpp:server-vulkan
+#ghcr.io/ggml-org/llama.cpp:server-vulkan
 #ghcr.io/ggml-org/llama.cpp:server-rocm
 diegosouzapw/omniroute:latest
 ghcr.io/open-webui/open-webui:main
